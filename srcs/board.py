@@ -9,13 +9,13 @@ class Board(object):
         self.content = [[STONE_EMPTY for i in range(size)] for j in range(size)]
         self.size = size
 
-    def put_stone(self, x, y, color):
+    def put_stone(self, x, y, stone):
         if x >= self.size or y >= self.size:
             print("[ERROR]: unable to put a stone at %d %d -> out of board" % (x, y))
             exit(1)
-        self.content[y][x] = color
+        self.content[y][x] = stone
 
-    def is_allowed(self, x, y, color):
+    def is_allowed(self, x, y, stone):
         print("[WARNING]: is_allowed function to finish")
         return True
 
@@ -31,9 +31,9 @@ class Board(object):
             for x in range(self.size):
                 if self.content[y][x] == STONE_EMPTY:
                     print(end=' . ')
-                elif self.content[y][x] == STONE_WHITE:
+                elif self.content[y][x] == 0:
                     print(end=c.WHITE + c.F_WHITE + '   ' + c.EOC)
-                elif self.content[y][x] == STONE_BLACK:
+                elif self.content[y][x] == 1:
                     print(end=c.BLUE + c.F_BLUE + '   ' + c.EOC)
                 else:
                     print(end='%2d ' % (self.content[y][x]))
