@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 import sys
+import time
 import argparse
+from srcs.utils.stats import EnableStats, print_stats
 from srcs.players.real_player import RealPlayer
 from srcs.players.ai_player import AIPlayer
-from srcs.utils.stats import EnableStats, print_stats
 from srcs.board import Board
 from srcs.game import Game
 from srcs.gui import Gui
@@ -35,14 +36,16 @@ if __name__ == '__main__':
     args = parser.parse_args()
     EnableStats.enable = args.stats
 
+    game = Game()
     board = Board(size=args.board_size)
-    players[0] = player_types[args.player1](board=board, stone=0)
-    players[1] = player_types[args.player2](board=board, stone=1)
-    gui = Gui(board=board, w_size_percent=args.w_size_percent)
-    game = Game(board=board, players=players, gui=gui)
+    players[0] = player_types[args.player1](game=game, stone=0)
+    players[1] = player_types[args.player2](game=game, stone=1)
+    gui = Gui(game=game, w_size_percent=args.w_size_percent)
+    game.init(board=board, players=players, gui=gui)
 
     game.run()
     while 1:
-        pass
+        gui.update()
+        time.sleep(0.2)
 
     print_stats()

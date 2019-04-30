@@ -1,3 +1,4 @@
+import time
 import random
 from srcs.players.player import Player
 
@@ -8,7 +9,10 @@ class AIPlayer(Player):
         print("create AI")
 
     def move(self):
-        x = random.randrange(0, self.board.size)
-        y = random.randrange(0, self.board.size)
-        if self.board.is_allowed(x, y, self.stone):
-            self.board.put_stone(x, y, self.stone)
+        time.sleep(0.3)
+        while 42:
+            x = random.randrange(0, self.game.board.size)
+            y = random.randrange(0, self.game.board.size)
+            if self.game.board.is_allowed(x, y, self.stone):
+                self.game.board.put_stone(x, y, self.stone)
+                return
