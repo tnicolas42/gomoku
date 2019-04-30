@@ -49,6 +49,7 @@ class Gui(object):
 
 
     def draw_board(self):
+        self.board_canvas.delete("all")
         # create bg
         self.board_canvas.create_rectangle(0, 0, self.w_board_sz, self.w_board_sz, fill="#F6AA49")
 

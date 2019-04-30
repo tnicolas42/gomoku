@@ -15,7 +15,7 @@ player_types = dict(
     AI=AIPlayer,
 )
 board = None
-players = [None, None]
+players = []
 gui = None
 game = None
 
@@ -37,15 +37,15 @@ if __name__ == '__main__':
     EnableStats.enable = args.stats
 
     game = Game()
-    board = Board(size=args.board_size)
-    players[0] = player_types[args.player1](game=game, stone=0)
-    players[1] = player_types[args.player2](game=game, stone=1)
+    board = Board(game=game, size=args.board_size)
+    players.append(player_types[args.player1](game=game, stone=0))
+    players.append(player_types[args.player2](game=game, stone=1))
+    # players.append(player_types["AI"](game=game, stone=2))
+    # players.append(player_types["AI"](game=game, stone=3))
+    # players.append(player_types["AI"](game=game, stone=4))
     gui = Gui(game=game, w_size_percent=args.w_size_percent)
     game.init(board=board, players=players, gui=gui)
 
     game.run()
-    while 1:
-        gui.update()
-        time.sleep(0.2)
 
     print_stats()

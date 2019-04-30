@@ -21,9 +21,9 @@ class Game(object):
         while 42:
             self.board.print_board()
             for id_, player_act in enumerate(self.players):
-                id_player_act = id_
+                self.id_player_act = id_
                 player_act.move()
                 if player_act.has_win():
-                    print("player %d has win" % (id_player_act))
+                    print("player %d has win" % (self.id_player_act))
                     return True
                 self.gui.update()

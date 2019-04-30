@@ -5,4 +5,9 @@ STONE_EMPTY = -1
 STONES = (
     "#ffffff",
     "#000000",
+    "#FF0000",
+    "#00FF00",
+    "#0000FF",
 )
+
+STONES_DESTROYED_VICTORY = 10
