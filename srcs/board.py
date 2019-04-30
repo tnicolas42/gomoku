@@ -155,7 +155,6 @@ class Board(object):
         max_align = max(max_align, nb_aligned)
 
         if max_align >= NB_ALIGNED_VICTORY:
-            print("[WARNING]: has_win function to finish -> check 5 aligned stones without possibility of desrtoy one")
             self.game.players[stone].is_win_aligned = True
 
     def is_allowed(self, x, y, stone):
@@ -165,7 +164,6 @@ class Board(object):
         if it's ok -> return True
         else -> return False
         """
-        print("[WARNING]: is_allowed function to finish (free-threes")
         if self.content[y][x] is not STONE_EMPTY:
             return False
         return True
