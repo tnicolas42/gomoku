@@ -2,6 +2,17 @@ from srcs.const import *
 
 
 class Board(object):
+    """
+    this is the game board
+    it contains a matrix (content) that contains info about the board:
+    -1 == empty place
+    0, 1, ... == stone
+    [
+        [-1, -1,  0, ...]
+        [ 1,  0, -1, ...]
+        ...
+    ]
+    """
     game = None  # the game object
     content = []  # this is the board
     size = None
@@ -14,6 +25,16 @@ class Board(object):
         self.remain_places = size * size
 
     def put_stone(self, x, y, stone):
+        """
+        put a stone at 'x' 'y' with id 'stone'
+        this function put a stone and, if needed, destroy some stones:
+        before  -> -1  0  0  1
+        put     ->  1  0  0  1
+        destroy ->  1 -1 -1  1
+
+        this function can also count the number of stones aligned with the putted stone to know if the player win
+        if the player win -> update player.is_win_aligned
+        """
         if x >= self.size or y >= self.size:
             print("[ERROR]: unable to put a stone at %d %d -> out of board" % (x, y))
             exit(1)
@@ -138,12 +159,21 @@ class Board(object):
             self.game.players[stone].is_win_aligned = True
 
     def is_allowed(self, x, y, stone):
-        print("[WARNING]: is_allowed function to finish")
+        """
+        if we want to put a stone at 'x' 'y', this function check if it's allowed (empty place, no free-threes, ...)
+
+        if it's ok -> return True
+        else -> return False
+        """
+        print("[WARNING]: is_allowed function to finish (free-threes")
         if self.content[y][x] is not STONE_EMPTY:
             return False
         return True
 
     def print_board(self):
+        """
+        print the board (with colors) on stdout
+        """
         for i in range(self.size):
             if i == 0:
                 print(end='*')

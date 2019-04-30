@@ -7,6 +7,10 @@ class RealPlayer(Player):
         Player.__init__(self, *args, **kwargs)
 
     def move(self):
+        """
+        this function is called when the AI need to move
+        -> put a stone on the board after clicked
+        """
         self.is_clicked_on = False
         is_moving = False
         while not is_moving:

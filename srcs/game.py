@@ -1,6 +1,10 @@
 import time
 
 class Game(object):
+    """
+    this is the main object
+    this object contain a function to run the game
+    """
     board = None  # the board
     players = None  # a list with the players
     gui = None  # the gui object
@@ -10,6 +14,9 @@ class Game(object):
         pass
 
     def init(self, board, players, gui):
+        """
+        init the object with some variables
+        """
         self.board = board
         self.players = players
         self.gui = gui
@@ -17,6 +24,11 @@ class Game(object):
 
 
     def run(self):
+        """
+        main function of the program
+        this function run the game -> play all players turn, check if there is a winner, ...
+        """
+        self.gui.redraw()
         self.gui.update()
         while 42:
             for id_, player_act in enumerate(self.players):
@@ -30,4 +42,5 @@ class Game(object):
                     self.board.print_board()
                     print("no winner in this game")
                     return False
+                self.gui.redraw()
                 self.gui.update()

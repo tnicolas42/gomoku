@@ -8,6 +8,9 @@ tk.Canvas.create_circle = _create_circle
 
 
 class Gui(object):
+    """
+    this object is used for the gui -> draw the game o the screen and get mouse & keyboard events
+    """
     game = None  # the game object
     win = None  # tk.Tk object
     w_board_sz = None  # size of board on window
@@ -35,20 +38,36 @@ class Gui(object):
         self.board_canvas.bind("<Button-1>", self.button_clicked)
 
     def button_clicked(self, event):
+        """
+        called when the mouse click on the board canvas
+        get the position of the intersection under cursor and update update the player
+        """
         line_space = self.w_board_sz / (self.game.board.size + 1)
         x = (event.x - (line_space / 2)) / line_space
         y = (event.y - (line_space / 2)) / line_space
         if x >= self.game.board.size or y >= self.game.board.size or \
                 event.x < line_space / 2 or event.y < line_space / 2:
             return
+        # tell to the actual player that we click on this position
         self.game.players[self.game.id_player_act].clicked_on(int(x), int(y))
 
     def update(self):
+        """
+        update all events (mouse click, keydown, ...)
+        """
         self.win.update()
+
+    def redraw(self):
+        """
+        redraw all teh window
+        """
         self.draw_board()
         self.draw_left_band()
 
     def draw_left_band(self):
+        """
+        redraw the left band
+        """
         self.left_canvas.delete("all")
 
         for id_pl, player in enumerate(self.game.players):
@@ -63,11 +82,14 @@ class Gui(object):
                 fill=STONES[id_pl], outline=out_color, width=self.w_board_sz/100)
 
     def draw_board(self):
+        """
+        redraw the board
+        """
         self.board_canvas.delete("all")
         # create bg
         self.board_canvas.create_rectangle(0, 0, self.w_board_sz, self.w_board_sz, fill="#F6AA49")
 
-        # create lines
+        # create lines an cols
         line_space = self.w_board_sz / (self.game.board.size + 1)  # space btw 2 lines
         line_width = max(1, line_space / 10)
         x1 = line_space
@@ -90,4 +112,5 @@ class Gui(object):
                 if self.game.board.content[y][x] >= 0:
                     x_win = line_space + line_space * x
                     y_win = line_space + line_space * y
-                    self.board_canvas.create_circle(int(x_win), int(y_win), int(line_space * 0.4), fill=STONES[self.game.board.content[y][x]])
+                    self.board_canvas.create_circle(int(x_win), int(y_win), int(line_space * 0.4),
+                                                    fill=STONES[self.game.board.content[y][x]])

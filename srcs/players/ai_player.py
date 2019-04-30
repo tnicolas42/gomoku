@@ -8,7 +8,11 @@ class AIPlayer(Player):
         Player.__init__(self, *args, **kwargs)
 
     def move(self):
-        # time.sleep(0.1)
+        """
+        this function is called when the AI need to move
+        -> put a stone on the board
+        """
+        # first algo -> just put a random stone
         while 42:
             x = random.randrange(0, self.game.board.size)
             y = random.randrange(0, self.game.board.size)
