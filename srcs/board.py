@@ -45,6 +45,94 @@ class Board(object):
                 self.content[destroy_tab_i[3]][destroy_tab_i[2]] = STONE_EMPTY
                 self.game.players[stone].destroyed_stones_count += 2
 
+        # check aligned stones
+        max_align = 0
+        # align in x
+        nb_aligned = 1
+        new_x = x - 1
+        new_y = y
+        while new_x >= 0:
+            if self.content[new_y][new_x] == stone:
+                nb_aligned += 1
+            else:
+                break
+            new_x -= 1
+        new_x = x + 1
+        while new_x < self.size:
+            if self.content[new_y][new_x] == stone:
+                nb_aligned += 1
+            else:
+                break
+            new_x += 1
+        max_align = max(max_align, nb_aligned)
+
+        # align in y
+        nb_aligned = 1
+        new_x = x
+        new_y = y - 1
+        while new_y >= 0:
+            if self.content[new_y][new_x] == stone:
+                nb_aligned += 1
+            else:
+                break
+            new_y -= 1
+        new_y = y + 1
+        while new_y < self.size:
+            if self.content[new_y][new_x] == stone:
+                nb_aligned += 1
+            else:
+                break
+            new_y += 1
+        max_align = max(max_align, nb_aligned)
+
+        # align in diagonal 1
+        nb_aligned = 1
+        new_x = x - 1
+        new_y = y - 1
+        while new_x >= 0 and new_y >= 0:
+            if self.content[new_y][new_x] == stone:
+                nb_aligned += 1
+            else:
+                break
+            new_x -= 1
+            new_y -= 1
+        new_x = x + 1
+        new_y = y + 1
+        while new_x < self.size and new_y < self.size:
+            if self.content[new_y][new_x] == stone:
+                nb_aligned += 1
+            else:
+                break
+            new_x += 1
+            new_y += 1
+        max_align = max(max_align, nb_aligned)
+
+        # align in diagonal 2
+        nb_aligned = 1
+        new_x = x - 1
+        new_y = y + 1
+        while new_x >= 0 and new_y < self.size:
+            if self.content[new_y][new_x] == stone:
+                nb_aligned += 1
+            else:
+                break
+            new_x -= 1
+            new_y += 1
+        new_x = x + 1
+        new_y = y - 1
+        while new_x < self.size and new_y >= 0:
+            if self.content[new_y][new_x] == stone:
+                nb_aligned += 1
+            else:
+                break
+            new_x += 1
+            new_y -= 1
+        max_align = max(max_align, nb_aligned)
+
+        if max_align >= NB_ALIGNED_VICTORY:
+            print("[WARNING]: has_win function to finish -> check 5 aligned stones without possibility of desrtoy one")
+            self.game.players[stone].is_win_aligned = True
+
     def is_allowed(self, x, y, stone):
         print("[WARNING]: is_allowed function to finish")
         if self.content[y][x] is not STONE_EMPTY:

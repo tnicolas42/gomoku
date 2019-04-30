@@ -24,6 +24,7 @@ class Game(object):
                 self.id_player_act = id_
                 player_act.move()
                 if player_act.has_win():
+                    self.board.print_board()
                     print("player %d has win" % (self.id_player_act))
                     return True
                 self.gui.update()

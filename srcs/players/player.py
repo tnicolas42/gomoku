@@ -6,6 +6,7 @@ class Player(object):
     game = None  # the game object
     stone = None  # the stone -> STONE_BLACK, STONE_WHITE (defined in srcs.const)
     destroyed_stones_count = 0  # number of destroyed stones
+    is_win_aligned = False
 
     is_clicked_on = False
     clicked_pos = [0, 0]
@@ -23,7 +24,10 @@ class Player(object):
         print(self.stone, self.clicked_pos)
 
     def has_win(self):
-        print("[WARNING]: has_win function to finish -> check 5 aligned stones without possibility of desrtoy one")
+        if self.is_win_aligned:
+            return True
+
         if self.destroyed_stones_count >= STONES_DESTROYED_VICTORY:
             return True
+
         return False
