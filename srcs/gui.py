@@ -46,7 +46,21 @@ class Gui(object):
     def update(self):
         self.win.update()
         self.draw_board()
+        self.draw_left_band()
 
+    def draw_left_band(self):
+        self.left_canvas.delete("all")
+
+        for id_pl, player in enumerate(self.game.players):
+            out_color = "grey"
+            if id_pl == self.game.id_player_act:
+                out_color = "red"
+            self.left_canvas.create_rectangle(
+                int(self.w_width_left * 0.1),
+                int(self.w_board_sz / len(self.game.players) * id_pl + self.w_board_sz / len(self.game.players) * 0.05),
+                int(self.w_width_left * 0.9),
+                int(self.w_board_sz / len(self.game.players) * id_pl + self.w_board_sz / len(self.game.players) * 0.95),
+                fill=STONES[id_pl], outline=out_color, width=self.w_board_sz/100)
 
     def draw_board(self):
         self.board_canvas.delete("all")

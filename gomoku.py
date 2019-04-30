@@ -21,10 +21,9 @@ game = None
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--player1', type=str, default="REAL", choices=player_types.keys(),
-                            help="This is the player 1 type (if REAL, this is a real player else, this is an AI)")
-    parser.add_argument('--player2', type=str, default="REAL", choices=player_types.keys(),
-                            help="This is the player 2 type (if REAL, this is a real player else, this is an AI)")
+    parser.add_argument('--players', type=str, choices=player_types.keys(), nargs='+', required=False, default=["REAL", "AI"],
+                            help="this is the players list (--players AI REAL ...) -> max %d players" % (len(STONES)))
+
     parser.add_argument('--board-size', type=int, default=19,
                             help="this is the size of the board")
 
@@ -34,15 +33,15 @@ if __name__ == '__main__':
                         help="Print stats about functions [for debug]")
 
     args = parser.parse_args()
+    if len(args.players) < 2 or len(args.players) > len(STONES):
+        print("invalid number of players in the game (%d)" % (len(args.players)))
+        exit(1)
     EnableStats.enable = args.stats
 
     game = Game()
     board = Board(game=game, size=args.board_size)
-    players.append(player_types[args.player1](game=game, stone=0))
-    players.append(player_types[args.player2](game=game, stone=1))
-    # players.append(player_types["AI"](game=game, stone=2))
-    # players.append(player_types["AI"](game=game, stone=3))
-    # players.append(player_types["AI"](game=game, stone=4))
+    for id_, player in enumerate(args.players):
+        players.append(player_types[player](game=game, stone=id_))
     gui = Gui(game=game, w_size_percent=args.w_size_percent)
     game.init(board=board, players=players, gui=gui)
 

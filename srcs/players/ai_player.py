@@ -8,7 +8,7 @@ class AIPlayer(Player):
         Player.__init__(self, *args, **kwargs)
 
     def move(self):
-        time.sleep(0.1)
+        # time.sleep(0.1)
         while 42:
             x = random.randrange(0, self.game.board.size)
             y = random.randrange(0, self.game.board.size)

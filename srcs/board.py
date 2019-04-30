@@ -5,17 +5,20 @@ class Board(object):
     game = None  # the game object
     content = []  # this is the board
     size = None
+    remain_places = None  # number of remaining places
 
     def __init__(self, game, size=19):
         self.game = game
         self.content = [[STONE_EMPTY for i in range(size)] for j in range(size)]
         self.size = size
+        self.remain_places = size * size
 
     def put_stone(self, x, y, stone):
         if x >= self.size or y >= self.size:
             print("[ERROR]: unable to put a stone at %d %d -> out of board" % (x, y))
             exit(1)
         self.content[y][x] = stone
+        self.remain_places -= 1
 
         # try to destroy stones
 
@@ -44,6 +47,7 @@ class Board(object):
                 self.content[destroy_tab_i[1]][destroy_tab_i[0]] = STONE_EMPTY
                 self.content[destroy_tab_i[3]][destroy_tab_i[2]] = STONE_EMPTY
                 self.game.players[stone].destroyed_stones_count += 2
+                self.remain_places += 2
 
         # check aligned stones
         max_align = 0
@@ -136,7 +140,6 @@ class Board(object):
     def is_allowed(self, x, y, stone):
         print("[WARNING]: is_allowed function to finish")
         if self.content[y][x] is not STONE_EMPTY:
-            print("not allowed")
             return False
         return True
 
@@ -164,6 +167,12 @@ class Board(object):
                     color = [c.GREEN, c.F_GREEN]
                 elif self.content[y][x] == 4:
                     color = [c.BLUE, c.F_BLUE]
+                elif self.content[y][x] == 5:
+                    color = [c.YELLOW, c.F_YELLOW]
+                elif self.content[y][x] == 6:
+                    color = [c.MAGENTA, c.F_MAGENTA]
+                elif self.content[y][x] == 7:
+                    color = [c.CYAN, c.F_CYAN]
                 else:
                     txt = '%2d ' % (self.content[y][x])
                 print(end=color[0] + color[1] + txt + c.EOC)
