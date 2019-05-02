@@ -13,6 +13,7 @@ class AIPlayer(Player):
         -> put a stone on the board
         """
         # first algo -> just put a random stone
+        time.sleep(0.1)
         while 42:
             x = random.randrange(0, self.game.board.size)
             y = random.randrange(0, self.game.board.size)

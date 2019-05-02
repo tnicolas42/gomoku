@@ -13,10 +13,13 @@ class RealPlayer(Player):
         """
         self.is_clicked_on = False
         is_moving = False
-        while not is_moving:
+        while not is_moving and not self.game.quit:
             time.sleep(0.05)
             if self.is_clicked_on:
+                self.game.gui.error_pos[0] = [None, None]  # reset the error stone
                 if self.game.board.is_allowed(*self.clicked_pos, self.stone):
                     self.game.board.put_stone(*self.clicked_pos, self.stone)
                     is_moving = True
+                else:
+                    self.game.gui.error_pos = [self.clicked_pos, time.time()]  # the position is not available -> disable it
                 self.is_clicked_on = False

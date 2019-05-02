@@ -1,4 +1,5 @@
 from srcs.const import *
+from srcs.utils.stats import get_stats, get_and_print_stats
 
 
 class Board(object):
@@ -55,11 +56,12 @@ class Board(object):
         self.content[y][x]['vulnerability'] = False
         return False
 
-    def check_and_destroy(self, x, y):
+    def check_destroyable(self, x, y, stone):
         """
-        check if the stone at 'x' 'y' can destroy some others stone (and destroy the stones if needed)
+        check if the stone at 'x' 'y' can destroy some others stone
+        return the list of destroyable stones [[x1, y1], [x2, y2], ...]
         """
-        stone = self.content[y][x]['stone']
+        ret = []
         # this is the condition to know if we can destroy some stones
         # x1y1 and x2y2 are the coordinate of potentials destroyed stones
         # x3y3 is the oposite stone
@@ -82,10 +84,10 @@ class Board(object):
         )
         for destroy_tab_i in destroy_tab:
             if destroy_cond(*destroy_tab_i):
-                self.content[destroy_tab_i[1]][destroy_tab_i[0]]['stone'] = STONE_EMPTY
-                self.content[destroy_tab_i[3]][destroy_tab_i[2]]['stone'] = STONE_EMPTY
-                self.game.players[stone].destroyed_stones_count += 2
-                self.remain_places += 2
+                ret.append([destroy_tab_i[0], destroy_tab_i[1]])
+                ret.append([destroy_tab_i[2], destroy_tab_i[3]])
+
+        return ret
 
     def _check_aligned_dir(self, x, y, stone, addx, addy):
         """
@@ -137,7 +139,7 @@ class Board(object):
         also check vulnerability of all stones
         """
         stone = self.content[y][x]['stone']
-        if stone == STONE_EMPTY:
+        if stone == STONE_EMPTY or self.content[y][x]['vulnerability']:
             return
         max_align = 0
 
@@ -152,6 +154,7 @@ class Board(object):
         if max_align >= NB_ALIGNED_VICTORY:
             self.game.players[stone].is_win_aligned = True
 
+    @get_stats
     def check_winner(self):
         for x in range(self.size):
             for y in range(self.size):
@@ -161,6 +164,7 @@ class Board(object):
             for y in range(self.size):
                 self.check_aligned(x, y)
 
+    @get_stats
     def put_stone(self, x, y, stone):
         """
         put a stone at 'x' 'y' with id 'stone'
@@ -176,13 +180,71 @@ class Board(object):
             print("[ERROR]: unable to put a stone at %d %d -> out of board" % (x, y))
             exit(1)
         self.content[y][x]['stone'] = stone
+        self.game.gui.last_pos = [x, y]  # save the pos of the last placed stone
         self.remain_places -= 1
 
         # destroy some stones if needed
-        self.check_and_destroy(x, y)
+        destroyed = self.check_destroyable(x, y, stone)
+        for dest_x, dest_y in destroyed:
+            self.content[dest_y][dest_x]['stone'] = STONE_EMPTY
+            self.game.players[stone].destroyed_stones_count += 1
+            self.remain_places += 1
 
         # check aif there is a winner
         self.check_winner()
+
+    def _is_free_three_dir(self, x, y, stone, addx, addy):
+        """
+        check if there is a free three from 'x' 'y' in direction given by 'addx' and 'addy'
+        return 1 if it's a free-three
+        else return 0
+        """
+        # list of all free-three configurations
+        # 0 == every stone is OK
+        # 1 == only empty stones
+        # 2 == only actual stone
+        # the 5th element is the 'x' 'y' element
+        free_three = (
+            (0, 0, 1, 2, 2, 2, 1, 0, 0),
+            (0, 0, 0, 1, 2, 2, 2, 1, 0),
+            (0, 1, 2, 2, 2, 1, 0, 0, 0),
+            (0, 0, 0, 1, 2, 2, 1, 2, 1),
+            (1, 2, 1, 2, 2, 1, 0, 0, 0),
+            (0, 0, 0, 1, 2, 1, 2, 2, 1),
+            (0, 2, 2, 1, 2, 1, 0, 0, 0),
+            (0, 0, 1, 2, 2, 1, 2, 1, 0),
+            (0, 1, 2, 1, 2, 2, 1, 0, 0),
+        )
+        len_free_three = len(free_three[0])
+        # get a list to compare with the free-three list
+        lst = [0 for i in range(len(free_three[0]))]
+        i = 0
+        new_x = x - (addx * (len_free_three >> 1))
+        new_y = y - (addy * (len_free_three >> 1))
+        while i < len_free_three:
+            if 0 <= new_x < self.size and 0 <= new_y < self.size:
+                lst[i] = self.content[new_y][new_x]['stone']
+            new_x += addx
+            new_y += addy
+            i += 1
+        lst[len_free_three >> 1] = stone
+        for free_elem in free_three:
+            is_free_three = True
+            for i in range(len_free_three):
+                if free_elem[i] == 0:  # no matter
+                    continue
+                elif free_elem[i] == 1:  # only empty
+                    if lst[i] is not STONE_EMPTY:
+                        is_free_three = False
+                        break
+                elif free_elem[i] == 2:  # only player stone
+                    if lst[i] is not stone:
+                        is_free_three = False
+                        break
+            if is_free_three:
+                return 1
+        return 0
+
 
     def is_allowed(self, x, y, stone):
         """
@@ -193,6 +255,18 @@ class Board(object):
         """
         if self.content[y][x]['stone'] is not STONE_EMPTY:
             return False
+
+        # check double three
+        # if the stone destroy others stones -> no double three effect
+        if len(self.check_destroyable(x, y, stone)) > 0:
+            return True
+
+        nb_free_three = self._is_free_three_dir(x, y, stone, 1, 0) + \
+                        self._is_free_three_dir(x, y, stone, 0, 1) + \
+                        self._is_free_three_dir(x, y, stone, 1, 1) + \
+                        self._is_free_three_dir(x, y, stone, -1, 1)
+        if nb_free_three >= 2:
+            return False  # double three
         return True
 
     def print_board(self):

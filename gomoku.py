@@ -32,6 +32,9 @@ if __name__ == '__main__':
     parser.add_argument("-s", "--stats", action="store_true", default=False,
                         help="Print stats about functions [for debug]")
 
+    parser.add_argument("--show-vulnerability", action="store_true", default=False,
+                        help="Show vulnerable stones")
+
     args = parser.parse_args()
     if len(args.players) < 2 or len(args.players) > len(STONES):
         print("invalid number of players in the game (%d)" % (len(args.players)))
@@ -42,10 +45,11 @@ if __name__ == '__main__':
     board = Board(game=game, size=args.board_size)
     for id_, player in enumerate(args.players):
         players.append(player_types[player](game=game, stone=id_))
-    gui = Gui(game=game, w_size_percent=args.w_size_percent)
+    gui = Gui(game=game, w_size_percent=args.w_size_percent, show_vulnerability=args.show_vulnerability)
     game.init(board=board, players=players, gui=gui)
 
     game.start()
     gui.run()
+    game.quit = True
 
     print_stats()

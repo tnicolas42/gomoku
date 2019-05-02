@@ -10,6 +10,7 @@ class Game(threading.Thread):
     players = None  # a list with the players
     gui = None  # the gui object
     id_player_act = 0  # id of the actual player
+    quit = False
 
     def __init__(self):
         threading.Thread.__init__(self)
@@ -29,7 +30,7 @@ class Game(threading.Thread):
         main function of the program
         this function run the game -> play all players turn, check if there is a winner, ...
         """
-        while 42:
+        while not self.quit:
             for id_, player_act in enumerate(self.players):
                 self.id_player_act = id_
                 player_act.move()
