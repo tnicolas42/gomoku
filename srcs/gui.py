@@ -1,4 +1,5 @@
 import tkinter as tk
+from srcs.utils.clock import Clock
 from srcs.const import *
 
 
@@ -17,9 +18,13 @@ class Gui(object):
     w_width_left = None  # width of left band
     board_canvas = None  # the canvas that contain the board
     left_canvas = None  # the canvas that contain the left band
+    quit = False
+    clock = None  # this is a clock object to control time
 
-    def __init__(self, game, title='gomoku', w_size_percent=80, left_band_w_percent=40):
+    def __init__(self, game, title='gomoku', w_size_percent=80, left_band_w_percent=40, rate=10):
         self.game = game
+
+        self.clock = Clock(rate=rate)
 
         self.win = tk.Tk()
         self.win.title = title
@@ -36,6 +41,16 @@ class Gui(object):
         self.board_canvas = tk.Canvas(self.win, width=self.w_board_sz, height=self.w_board_sz, bg="red")
         self.board_canvas.pack(side=tk.RIGHT)
         self.board_canvas.bind("<Button-1>", self.button_clicked)
+
+    def run(self):
+        """
+        main gui function:
+        this function update the gui at a given rate
+        """
+        while not self.quit:
+            self.update()
+            self.redraw()
+            self.clock.tick()  # wait until next loop
 
     def button_clicked(self, event):
         """
@@ -81,7 +96,7 @@ class Gui(object):
                 int(self.w_board_sz / len(self.game.players) * id_pl + self.w_board_sz / len(self.game.players) * 0.95),
                 fill=STONES[id_pl], outline=out_color, width=self.w_board_sz/100)
 
-    def draw_board(self):
+    def draw_board(self, draw_vulnerability=True):
         """
         redraw the board
         """
@@ -109,8 +124,14 @@ class Gui(object):
         # draw stones
         for y in range(self.game.board.size):
             for x in range(self.game.board.size):
-                if self.game.board.content[y][x] >= 0:
+                if self.game.board.content[y][x]['stone'] >= 0:
                     x_win = line_space + line_space * x
                     y_win = line_space + line_space * y
+                    vulner = {}
+                    if draw_vulnerability:
+                        if self.game.board.content[y][x]['win']:
+                            vulner = {'outline': 'green'}
+                        elif self.game.board.content[y][x]['vulnerability']:
+                            vulner = {'outline': 'red'}
                     self.board_canvas.create_circle(int(x_win), int(y_win), int(line_space * 0.4),
-                                                    fill=STONES[self.game.board.content[y][x]])
+                                                    fill=STONES[self.game.board.content[y][x]['stone']], **vulner)

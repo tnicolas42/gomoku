@@ -45,6 +45,7 @@ if __name__ == '__main__':
     gui = Gui(game=game, w_size_percent=args.w_size_percent)
     game.init(board=board, players=players, gui=gui)
 
-    game.run()
+    game.start()
+    gui.run()
 
     print_stats()

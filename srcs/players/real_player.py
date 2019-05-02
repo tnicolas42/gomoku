@@ -15,10 +15,8 @@ class RealPlayer(Player):
         is_moving = False
         while not is_moving:
             time.sleep(0.05)
-            self.game.gui.update()
             if self.is_clicked_on:
                 if self.game.board.is_allowed(*self.clicked_pos, self.stone):
                     self.game.board.put_stone(*self.clicked_pos, self.stone)
                     is_moving = True
                 self.is_clicked_on = False
-        self.game.gui.update()
