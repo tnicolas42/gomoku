@@ -45,7 +45,9 @@ class Gui(object):
 
         self.board_canvas = tk.Canvas(self.win, width=self.w_board_sz, height=self.w_board_sz, bg="red")
         self.board_canvas.pack(side=tk.RIGHT)
-        self.board_canvas.bind("<Button-1>", self.button_clicked)
+        self.board_canvas.bind("<Button-1>", self.board_clicked)
+
+        self.win.protocol("WM_DELETE_WINDOW", self.on_closing_window)
 
         # key binding
         self.win.bind('<Key>', self.keyPress)
@@ -60,7 +62,7 @@ class Gui(object):
             self.redraw()
             self.clock.tick()  # wait until next loop
 
-    def button_clicked(self, event):
+    def board_clicked(self, event):
         """
         called when the mouse click on the board canvas
         get the position of the intersection under cursor and update update the player
@@ -74,9 +76,12 @@ class Gui(object):
         # tell to the actual player that we click on this position
         self.game.players[self.game.id_player_act].clicked_on(int(x), int(y))
 
+    def on_closing_window(self):
+        self.quit = True
+
     def keyPress(self, e):
         if e.keysym == "Escape":
-            self.quit = True
+            self.on_closing_window()
 
     def update(self):
         """
@@ -140,14 +145,7 @@ class Gui(object):
                     x_win = line_space + line_space * x
                     y_win = line_space + line_space * y
                     create_args = {'fill': STONES[self.game.board.content[y][x]['stone']]}
-                    if self.error_pos[0] == [x, y]:
-                        if self.error_pos[1] + 1 < time.time():
-                            self.error_pos[0] = [None, None]
-                        else:
-                            create_args['fill'] = 'red'
-                            create_args['outline'] = 'black'
-                            create_args['width'] = self.w_board_sz // 200
-                    elif self.game.board.content[y][x]['win']:
+                    if self.game.board.content[y][x]['win']:
                         create_args['outline'] = 'green'
                         create_args['width'] = self.w_board_sz // 200
                     elif self.last_pos == [x, y]:
@@ -157,3 +155,15 @@ class Gui(object):
                         create_args['outline'] = 'red'
                         create_args['width'] = self.w_board_sz // 200
                     self.board_canvas.create_circle(int(x_win), int(y_win), int(line_space * 0.4), **create_args)
+                if self.error_pos[0] == [x, y]:
+                    if self.error_pos[1] + 1 < time.time():
+                        self.error_pos[0] = [None, None]
+                    x_win = line_space + line_space * x
+                    y_win = line_space + line_space * y
+                    cross_line_args = {'fill': 'red', 'width': self.w_board_sz // 100}
+                    self.board_canvas.create_line(int(x_win - line_space * 0.4), int(y_win - line_space * 0.4),
+                                                    int(x_win + line_space * 0.4), int(y_win + line_space * 0.4),
+                                                    **cross_line_args)
+                    self.board_canvas.create_line(int(x_win + line_space * 0.4), int(y_win - line_space * 0.4),
+                                                    int(x_win - line_space * 0.4), int(y_win + line_space * 0.4),
+                                                    **cross_line_args)
