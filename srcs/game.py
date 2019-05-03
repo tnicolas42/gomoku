@@ -31,6 +31,7 @@ class Game(threading.Thread):
         this function run the game -> play all players turn, check if there is a winner, ...
         """
         while not self.quit:
+            self.board.reset_debug()
             for id_, player_act in enumerate(self.players):
                 self.id_player_act = id_
                 player_act.move()

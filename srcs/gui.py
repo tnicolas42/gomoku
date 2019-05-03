@@ -151,7 +151,10 @@ class Gui(object):
                     x_win = line_space + line_space * x
                     y_win = line_space + line_space * y
                     create_args = {'fill': STONES[self.game.board.content[y][x]['stone']]}
-                    if self.game.board.content[y][x]['win']:
+                    if self.game.board.content[y][x]['debug_color'] is not None:
+                        create_args['outline'] = self.game.board.content[y][x]['debug_color']
+                        create_args['width'] = self.w_board_sz // 200
+                    elif self.game.board.content[y][x]['win']:
                         create_args['outline'] = 'green'
                         create_args['width'] = self.w_board_sz // 200
                     elif self.last_pos == [x, y]:
@@ -167,6 +170,16 @@ class Gui(object):
                     x_win = line_space + line_space * x
                     y_win = line_space + line_space * y
                     cross_line_args = {'fill': 'red', 'width': self.w_board_sz // 100}
+                    self.board_canvas.create_line(int(x_win - line_space * 0.4), int(y_win - line_space * 0.4),
+                                                    int(x_win + line_space * 0.4), int(y_win + line_space * 0.4),
+                                                    **cross_line_args)
+                    self.board_canvas.create_line(int(x_win + line_space * 0.4), int(y_win - line_space * 0.4),
+                                                    int(x_win - line_space * 0.4), int(y_win + line_space * 0.4),
+                                                    **cross_line_args)
+                if self.game.board.content[y][x]['debug_marker_color'] is not None:
+                    x_win = line_space + line_space * x
+                    y_win = line_space + line_space * y
+                    cross_line_args = {'fill': self.game.board.content[y][x]['debug_marker_color'], 'width': self.w_board_sz // 200}
                     self.board_canvas.create_line(int(x_win - line_space * 0.4), int(y_win - line_space * 0.4),
                                                     int(x_win + line_space * 0.4), int(y_win + line_space * 0.4),
                                                     **cross_line_args)
