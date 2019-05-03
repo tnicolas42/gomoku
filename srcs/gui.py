@@ -88,6 +88,8 @@ class Gui(object):
     def keyPress(self, e):
         if e.keysym == "Escape":
             self.on_closing_window()
+        elif e.keysym in ("BackSpace", "Delete"):
+            self.game.board.reset_debug()
 
     def update(self):
         """

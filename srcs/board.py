@@ -287,7 +287,7 @@ class Board(object):
         )
         len_free_three = len(free_three[0])
         # get a list to compare with the free-three list
-        lst = [0 for i in range(len(free_three[0]))]
+        lst = [-2 for i in range(len(free_three[0]))]
         i = 0
         new_x = x - (addx * (len_free_three >> 1))
         new_y = y - (addy * (len_free_three >> 1))
