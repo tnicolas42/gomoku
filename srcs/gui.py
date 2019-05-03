@@ -1,5 +1,7 @@
+import os
 import time
 import tkinter as tk
+from platform import system as platform
 from srcs.utils.clock import Clock
 from srcs.const import *
 
@@ -32,7 +34,7 @@ class Gui(object):
         self.clock = Clock(rate=rate)
 
         self.win = tk.Tk()
-        self.win.title = title
+        self.win.title(title)
         max_size = min(self.win.winfo_screenwidth(), self.win.winfo_screenheight())
         self.w_board_sz = int(max_size * (w_size_percent / 100))
         self.w_width_left = int(self.w_board_sz * (left_band_w_percent / 100))
@@ -51,6 +53,10 @@ class Gui(object):
 
         # key binding
         self.win.bind('<Key>', self.keyPress)
+
+        # focus the win
+        if platform() == 'Darwin':  # How Mac OS X is identified by Python
+            os.system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
 
     def run(self):
         """

@@ -38,6 +38,7 @@ class Board(object):
                         0 <= y1 < self.size and 0 <= y2 < self.size and 0 <= y3 < self.size and
                         self.content[y][x]['stone'] == self.content[y2][x2]['stone'] and
                         self.content[y1][x1]['stone'] != stone and self.content[y3][x3]['stone'] != stone and
+                        self.content[y1][x1]['stone'] != self.content[y3][x3]['stone'] and
                         (self.content[y1][x1]['stone'] == STONE_EMPTY or self.content[y3][x3]['stone'] == STONE_EMPTY))
         vul_tab = (
             (x-1, y, x+1, y, x+2, y),
@@ -154,7 +155,6 @@ class Board(object):
         if max_align >= NB_ALIGNED_VICTORY:
             self.game.players[stone].is_win_aligned = True
 
-    @get_stats
     def check_winner(self):
         for x in range(self.size):
             for y in range(self.size):
@@ -164,7 +164,6 @@ class Board(object):
             for y in range(self.size):
                 self.check_aligned(x, y)
 
-    @get_stats
     def put_stone(self, x, y, stone):
         """
         put a stone at 'x' 'y' with id 'stone'

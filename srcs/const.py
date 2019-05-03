@@ -5,8 +5,8 @@ STONE_EMPTY = -1
 
 # color for all stones (the max number of players is len(STONES))
 STONES = (
-    "#ffffff",
     "#000000",
+    "#ffffff",
     "#FF0000",
     "#00FF00",
     "#0000FF",
