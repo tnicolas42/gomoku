@@ -27,16 +27,16 @@ class Board(object):
     content = []  # this is the board
     size = None
     remain_places = None  # number of remaining places
-    is_vulnerable_victory = False
+    is_vulnerable_victory = False  # if victory but vulnerable -> wait one turn before win
 
     def __init__(self, game, size=19):
         self.game = game
         self.content = [
             [
                 {
-                    'stone': STONE_EMPTY,
-                    'vulnerability': False,
-                    'win': 0,
+                    'stone': STONE_EMPTY,  # player id or STONE_EMPTY
+                    'vulnerability': False,  # True if vulnerable (BAA.)
+                    'win': 0,  # True if the player win wit this stone
                     'debug_color': None,  # set an outline of this color around stones
                     'debug_marker_color': None,  # set a marker of this color one this point (even on EMPTY STONES)
                 }
