@@ -146,6 +146,13 @@ class Gui(object):
             x2 = x1
             self.board_canvas.create_line(int(x1), int(y1), int(x2), int(y2), fill="black", width=line_width)
 
+        # add point
+        for x in range(self.game.board.size // 2 % 6, self.game.board.size, 6):
+            for y in range(self.game.board.size // 2 % 6, self.game.board.size, 6):
+                x_win = line_space + line_space * x
+                y_win = line_space + line_space * y
+                self.board_canvas.create_circle(int(x_win), int(y_win), int(line_space * 0.15), fill='black')
+
         # draw stones
         for y in range(self.game.board.size):
             for x in range(self.game.board.size):
