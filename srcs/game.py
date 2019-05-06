@@ -1,5 +1,6 @@
-import threading
 import time
+import threading
+from srcs.heuristic import basic_heuristic
 
 class Game(threading.Thread):
     """

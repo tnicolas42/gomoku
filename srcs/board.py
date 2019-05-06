@@ -6,22 +6,43 @@ class Board(object):
     """
     this is the game board
     it contains a matrix (content) that contains info about the board:
-    -1 == empty place
-    0, 1, ... == stone
     [
-        [-1, -1,  0, ...]
-        [ 1,  0, -1, ...]
+        [{}, {}, {}, ...]
+        [{}, {}, {}, ...]
         ...
     ]
+    foreach dictionnary:
+        stone=int
+            -1 == empty place
+            0, 1, ... == stone
+        vulnerability=bool
+            if vulneable (can be destroyed with one move) -> True else False
+        win=bool
+        debug_color=str
+            if not None -> set the outline of the stone with the color: 'debug_color'
+        debug_marker_color=str
+            if not None -> put a marker on this position
     """
     game = None  # the game object
     content = []  # this is the board
     size = None
     remain_places = None  # number of remaining places
+    is_vulnerable_victory = False  # if victory but vulnerable -> wait one turn before win
+    nb_total_stones = 0  # total number of stone on board
 
     def __init__(self, game, size=19):
         self.game = game
-        self.content = [[{'stone': STONE_EMPTY, 'vulnerability': False, 'win': False} for i in range(size)] for j in range(size)]
+        self.content = [
+            [
+                {
+                    'stone': STONE_EMPTY,  # player id or STONE_EMPTY
+                    'vulnerability': False,  # True if vulnerable (BAA.)
+                    'win': 0,  # True if the player win wit this stone
+                    'debug_color': None,  # set an outline of this color around stones
+                    'debug_marker_color': None,  # set a marker of this color one this point (even on EMPTY STONES)
+                }
+            for i in range(size)] for j in range(size)
+        ]
         self.size = size
         self.remain_places = size * size
 
@@ -90,15 +111,27 @@ class Board(object):
 
         return ret
 
-    def _check_aligned_dir(self, x, y, stone, addx, addy):
+    def _check_aligned_dir(self, x, y, stone, addx, addy, check_only=False):
         """
         check the alignement in one direction (given by addx and addy)
+
+        if check_only -> don't update the player victory
+
+        return bool (if 5 or more aligned) and bool (if he aligneement is not vulnerable)
         """
         nb_aligned = 1
+        is_aligned_vulnerable = [False, False]
+        if self.content[y][x]['vulnerability']:
+            is_aligned_vulnerable = [True, True]
+        nb_aligned_non_vulnerable = 1
         new_x = x + addx
         new_y = y + addy
         while 0 <= new_x < self.size and 0 <= new_y < self.size:
-            if self.content[new_y][new_x]['stone'] == stone and not self.content[new_y][new_x]['vulnerability']:
+            if self.content[new_y][new_x]['stone'] == stone:
+                if self.content[new_y][new_x]['vulnerability']:
+                    is_aligned_vulnerable[0] = True
+                if not is_aligned_vulnerable[0]:
+                    nb_aligned_non_vulnerable += 1
                 nb_aligned += 1
             else:
                 break
@@ -107,62 +140,107 @@ class Board(object):
         new_x = x - addx
         new_y = y - addy
         while 0 <= new_x < self.size and 0 <= new_y < self.size:
-            if self.content[new_y][new_x]['stone'] == stone and not self.content[new_y][new_x]['vulnerability']:
+            if self.content[new_y][new_x]['stone'] == stone:
+                if self.content[new_y][new_x]['vulnerability']:
+                    is_aligned_vulnerable[1] = True
+                if not is_aligned_vulnerable[1]:
+                    nb_aligned_non_vulnerable += 1
                 nb_aligned += 1
             else:
                 break
             new_x -= addx
             new_y -= addy
         if nb_aligned >= NB_ALIGNED_VICTORY:
-            new_x = x + addx
-            new_y = y + addy
-            while 0 <= new_x < self.size and 0 <= new_y < self.size:
-                if self.content[new_y][new_x]['stone'] == stone and not self.content[new_y][new_x]['vulnerability']:
-                    self.content[new_y][new_x]['win'] = True
-                else:
-                    break
-                new_x += addx
-                new_y += addy
-            new_x = x - addx
-            new_y = y - addy
-            while 0 <= new_x < self.size and 0 <= new_y < self.size:
-                if self.content[new_y][new_x]['stone'] == stone and not self.content[new_y][new_x]['vulnerability']:
-                    self.content[new_y][new_x]['win'] = True
-                else:
-                    break
-                new_x -= addx
-                new_y -= addy
-        return nb_aligned
+            if not check_only:
+                new_x = x
+                new_y = y
+                while 0 <= new_x < self.size and 0 <= new_y < self.size:
+                    if self.content[new_y][new_x]['stone'] == stone:
+                        if self.is_vulnerable_victory or nb_aligned_non_vulnerable >= NB_ALIGNED_VICTORY:
+                            self.content[new_y][new_x]['win'] = True
+                    else:
+                        break
+                    new_x += addx
+                    new_y += addy
+                new_x = x - addx
+                new_y = y - addy
+                while 0 <= new_x < self.size and 0 <= new_y < self.size:
+                    if self.content[new_y][new_x]['stone'] == stone:
+                        if self.is_vulnerable_victory or nb_aligned_non_vulnerable >= NB_ALIGNED_VICTORY:
+                            self.content[new_y][new_x]['win'] = True
+                    else:
+                        break
+                    new_x -= addx
+                    new_y -= addy
+            if nb_aligned_non_vulnerable >= NB_ALIGNED_VICTORY:
+                return True, True  # nb_aligned == OK, not_vulnerable == True
+            else:
+                return True, False  # nb_aligned == OK, not_vulerable == False -> wait one turn before win
+        return False, False  # nb_aligned too low
 
-    def check_aligned(self, x, y):
+    def check_aligned(self, x, y, check_only=False):
         """
         check if there is 5 or more aligned stones
         also check vulnerability of all stones
+
+        if check_only -> don't update player victory
+
+        return the new state of is_vulnerable_victory
         """
         stone = self.content[y][x]['stone']
-        if stone == STONE_EMPTY or self.content[y][x]['vulnerability']:
-            return
-        max_align = 0
+        if stone == STONE_EMPTY:
+            return False
+        total_is_aligned = False
+        total_is_not_vulnerable = False
 
-        nb_aligned = self._check_aligned_dir(x, y, stone, 1, 0)
-        max_align = max(max_align, nb_aligned)
-        nb_aligned = self._check_aligned_dir(x, y, stone, 0, 1)
-        max_align = max(max_align, nb_aligned)
-        nb_aligned = self._check_aligned_dir(x, y, stone, 1, 1)
-        max_align = max(max_align, nb_aligned)
-        nb_aligned = self._check_aligned_dir(x, y, stone, 1, -1)
-        max_align = max(max_align, nb_aligned)
-        if max_align >= NB_ALIGNED_VICTORY:
-            self.game.players[stone].is_win_aligned = True
+        is_aligned, is_not_vulnerable = self._check_aligned_dir(x, y, stone, 1, 0, check_only)
+        total_is_aligned = total_is_aligned or is_aligned
+        total_is_not_vulnerable = total_is_not_vulnerable or is_not_vulnerable
+        is_aligned, is_not_vulnerable = self._check_aligned_dir(x, y, stone, 0, 1, check_only)
+        total_is_aligned = total_is_aligned or is_aligned
+        total_is_not_vulnerable = total_is_not_vulnerable or is_not_vulnerable
+        is_aligned, is_not_vulnerable = self._check_aligned_dir(x, y, stone, 1, 1, check_only)
+        total_is_aligned = total_is_aligned or is_aligned
+        total_is_not_vulnerable = total_is_not_vulnerable or is_not_vulnerable
+        is_aligned, is_not_vulnerable = self._check_aligned_dir(x, y, stone, 1, -1, check_only)
+        total_is_aligned = total_is_aligned or is_aligned
+        total_is_not_vulnerable = total_is_not_vulnerable or is_not_vulnerable
+
+        if total_is_aligned:
+            if not check_only:
+                if self.is_vulnerable_victory or total_is_not_vulnerable:
+                    self.game.players[stone].is_win_aligned = True
+                if not total_is_not_vulnerable:  # if vulnerable
+                    return True
+            else:
+                return True
+        return False
+
+    def reset_debug(self):
+        """
+        reset the debug color in all the board
+        """
+        for x in range(self.size):
+            for y in range(self.size):
+                self.content[y][x]['debug_color'] = None
+                self.content[y][x]['debug_marker_color'] = None
 
     def check_winner(self):
+        self.nb_total_stones = 0
+        for pl in self.game.players:
+            pl.nb_stone = 0
         for x in range(self.size):
             for y in range(self.size):
+                if self.content[y][x]['stone'] is not STONE_EMPTY:
+                    self.nb_total_stones += 1
+                    self.game.players[self.content[y][x]['stone']].nb_stone += 1
                 self.check_vulnerability(x, y)
 
+        tmp_is_vulnerable_victory = False
         for x in range(self.size):
             for y in range(self.size):
-                self.check_aligned(x, y)
+                tmp_is_vulnerable_victory = tmp_is_vulnerable_victory or self.check_aligned(x, y)
+        self.is_vulnerable_victory = tmp_is_vulnerable_victory
 
     def put_stone(self, x, y, stone):
         """
@@ -216,7 +294,7 @@ class Board(object):
         )
         len_free_three = len(free_three[0])
         # get a list to compare with the free-three list
-        lst = [0 for i in range(len(free_three[0]))]
+        lst = [-2 for i in range(len(free_three[0]))]
         i = 0
         new_x = x - (addx * (len_free_three >> 1))
         new_y = y - (addy * (len_free_three >> 1))
@@ -265,7 +343,13 @@ class Board(object):
                         self._is_free_three_dir(x, y, stone, 1, 1) + \
                         self._is_free_three_dir(x, y, stone, -1, 1)
         if nb_free_three >= 2:
-            return False  # double three
+            self.content[y][x]['stone'] = stone
+            check_aligned = self.check_aligned(x, y, True)  # if the move win
+            self.content[y][x]['stone'] = STONE_EMPTY
+            if check_aligned:
+                return True
+            else:
+                return False  # double three
         return True
 
     def print_board(self):
@@ -286,9 +370,9 @@ class Board(object):
                 if self.content[y][x]['stone'] == STONE_EMPTY:
                     pass
                 elif self.content[y][x]['stone'] == 0:
-                   color = [c.WHITE, c.F_WHITE]
-                elif self.content[y][x]['stone'] == 1:
                     color = [c.BLACK, c.F_BLACK]
+                elif self.content[y][x]['stone'] == 1:
+                    color = [c.WHITE, c.F_WHITE]
                 elif self.content[y][x]['stone'] == 2:
                     color = [c.RED, c.F_RED]
                 elif self.content[y][x]['stone'] == 3:
