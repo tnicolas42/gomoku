@@ -33,13 +33,15 @@ class Game(threading.Thread):
         """
         while not self.quit:
             for id_, player_act in enumerate(self.players):
+                if self.quit:
+                    return False
                 self.id_player_act = id_
                 player_act.move()
                 if player_act.has_win():
-                    self.board.print_board()
+                    print(self.board)
                     print("player %d has win" % (self.id_player_act))
                     return True
                 if self.board.remain_places <= 0:
-                    self.board.print_board()
+                    print(self.board)
                     print("no winner in this game")
                     return False

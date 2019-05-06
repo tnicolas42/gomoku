@@ -1,7 +1,6 @@
 from srcs.const import *
 from srcs.utils.stats import get_stats, get_and_print_stats
 
-
 class Board(object):
     """
     this is the game board
@@ -30,12 +29,12 @@ class Board(object):
     is_vulnerable_victory = False  # if victory but vulnerable -> wait one turn before win
     nb_total_stones = 0  # total number of stone on board
 
-    def __init__(self, game, size=19):
+    def __init__(self, game, size=19, content=[]):
         self.game = game
         self.content = [
             [
                 {
-                    'stone': STONE_EMPTY,  # player id or STONE_EMPTY
+                    'stone': STONE_EMPTY if content == [] else content[j][i]['stone'],  # player id or STONE_EMPTY
                     'vulnerability': False,  # True if vulnerable (BAA.)
                     'win': 0,  # True if the player win wit this stone
                     'debug_color': None,  # set an outline of this color around stones
@@ -242,7 +241,7 @@ class Board(object):
                 tmp_is_vulnerable_victory = tmp_is_vulnerable_victory or self.check_aligned(x, y)
         self.is_vulnerable_victory = tmp_is_vulnerable_victory
 
-    def put_stone(self, x, y, stone):
+    def put_stone(self, x, y, stone, test=False):
         """
         put a stone at 'x' 'y' with id 'stone'
         this function put a stone and, if needed, destroy some stones:
@@ -256,19 +255,23 @@ class Board(object):
         if x >= self.size or y >= self.size:
             print("[ERROR]: unable to put a stone at %d %d -> out of board" % (x, y))
             exit(1)
+
+        if not test:
+            self.game.gui.last_pos = [x, y]  # save the pos of the last placed stone
+            self.remain_places -= 1
         self.content[y][x]['stone'] = stone
-        self.game.gui.last_pos = [x, y]  # save the pos of the last placed stone
-        self.remain_places -= 1
 
         # destroy some stones if needed
         destroyed = self.check_destroyable(x, y, stone)
         for dest_x, dest_y in destroyed:
             self.content[dest_y][dest_x]['stone'] = STONE_EMPTY
-            self.game.players[stone].destroyed_stones_count += 1
             self.remain_places += 1
+            if not test:
+                self.game.players[stone].destroyed_stones_count += 1
 
-        # check aif there is a winner
-        self.check_winner()
+        if not test:
+            # check aif there is a winner
+            self.check_winner()
 
     def _is_free_three_dir(self, x, y, stone, addx, addy):
         """
@@ -352,18 +355,19 @@ class Board(object):
                 return False  # double three
         return True
 
-    def print_board(self):
+    def __str__(self):
         """
         print the board (with colors) on stdout
         """
+        s = ''
         for i in range(self.size):
             if i == 0:
-                print(end='*')
-            print(end='---')
+                s += '*'
+            s += '---'
         if i == self.size - 1:
-            print('*')
+            s += '*\n'
         for y in range(self.size):
-            print(end='|')
+            s += '|'
             for x in range(self.size):
                 color = [c.EOC, c.EOC]
                 txt = ' . '
@@ -387,11 +391,12 @@ class Board(object):
                     color = [c.CYAN, c.F_CYAN]
                 else:
                     txt = '%2d ' % (self.content[y][x]['stone'])
-                print(end=color[0] + color[1] + txt + c.EOC)
-            print('|')
+                s += color[0] + color[1] + txt + c.EOC
+            s += '|\n'
         for i in range(self.size):
             if i == 0:
-                print(end='*')
-            print(end='---')
+                s += '*'
+            s += '---'
         if i == self.size - 1:
-            print('*')
+            s += '*\n'
+        return s
