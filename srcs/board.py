@@ -160,7 +160,7 @@ class SoftBoard(object):
                     if self.content[new_y][new_x] == stone:
                         if not self.softMode and \
                            (self.is_vulnerable_victory or nb_aligned_non_vulnerable >= NB_ALIGNED_VICTORY):
-                            self.content[new_y][new_x]['win'] = True
+                            self.content_desc[new_y][new_x]['win'] = True
                     else:
                         break
                     new_x += addx
@@ -171,7 +171,7 @@ class SoftBoard(object):
                     if self.content[new_y][new_x] == stone:
                         if not self.softMode and \
                            (self.is_vulnerable_victory or nb_aligned_non_vulnerable >= NB_ALIGNED_VICTORY):
-                            self.content[new_y][new_x]['win'] = True
+                            self.content_desc[new_y][new_x]['win'] = True
                     else:
                         break
                     new_x -= addx
