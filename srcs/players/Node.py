@@ -1,5 +1,4 @@
 from srcs.players.player import Player
-from srcs.utils.stats import get_stats, get_and_print_stats
 from srcs.board import Board
 
 class Node():
@@ -9,7 +8,6 @@ class Node():
     def __repr__(self):
         return '(' + str(self.x) + ':' + str(self.y) + ')'
 
-    @get_stats
     def __init__(self, game, stone, x, y, depth, parent=None):
         self.game = game
         self.parent = parent
@@ -26,8 +24,6 @@ class Node():
             self.board.put_stone(self.x, self.y, self.stone, test=True)
 
         self.childs = []
-        if depth > 0:
-            self.setChilds()
 
     def setChilds(self):
         for y in range(self.board.size):
