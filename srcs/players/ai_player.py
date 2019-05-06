@@ -22,15 +22,15 @@ class AIPlayer(Player):
         #         return
         # print(self.game.boaboard)
 
-        depth = 2
-        nodes = Node(self.game, self.stone, -1, -1, depth)
+        depth = 3
+        nodes = Node(self.game, self.stone, -1, -1, depth, None)
         print(min_max(nodes, depth, True))
 
 def heuristic(node):
     return random.randint(-1000, 1000)
 
 def is_terminal_node(node):
-    return False
+    return len(node.childs) == 0
 
 def min_max(node, depth, maximize):
     """
@@ -41,7 +41,7 @@ def min_max(node, depth, maximize):
     if maximize:
         _max = float('-inf')
         for child in node.childs:
-            childMin = min_max(child, depth-1, True)
+            childMin = min_max(child, depth-1, False)
             if childMin['cost'] > _max:
                 _max = childMin['cost']
                 _node = child
