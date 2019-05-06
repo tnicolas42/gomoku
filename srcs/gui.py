@@ -168,20 +168,20 @@ class Gui(object):
         # draw stones
         for y in range(self.game.board.size):
             for x in range(self.game.board.size):
-                if self.game.board.content[y][x]['stone'] >= 0:
+                if self.game.board.content[y][x] >= 0:
                     x_win = line_space + line_space * x
                     y_win = line_space + line_space * y
-                    create_args = {'fill': STONES[self.game.board.content[y][x]['stone']]}
-                    if self.game.board.content[y][x]['debug_color'] is not None:
-                        create_args['outline'] = self.game.board.content[y][x]['debug_color']
+                    create_args = {'fill': STONES[self.game.board.content[y][x]]}
+                    if self.game.board.content_desc[y][x]['debug_color'] is not None:
+                        create_args['outline'] = self.game.board.content_desc[y][x]['debug_color']
                         create_args['width'] = self.w_board_sz // 200
-                    elif self.game.board.content[y][x]['win']:
+                    elif self.game.board.content_desc[y][x]['win']:
                         create_args['outline'] = 'green'
                         create_args['width'] = self.w_board_sz // 200
                     elif self.last_pos == [x, y]:
                         create_args['outline'] = 'blue'
                         create_args['width'] = self.w_board_sz // 200
-                    elif self.show_vulnerability and self.game.board.content[y][x]['vulnerability']:
+                    elif self.show_vulnerability and self.game.board.content_desc[y][x]['vulnerability']:
                         create_args['outline'] = 'red'
                         create_args['width'] = self.w_board_sz // 200
                     self.board_canvas.create_circle(int(x_win), int(y_win), int(line_space * 0.4), **create_args)
@@ -197,10 +197,10 @@ class Gui(object):
                     self.board_canvas.create_line(int(x_win + line_space * 0.4), int(y_win - line_space * 0.4),
                                                     int(x_win - line_space * 0.4), int(y_win + line_space * 0.4),
                                                     **cross_line_args)
-                if self.game.board.content[y][x]['debug_marker_color'] is not None:
+                if self.game.board.content_desc[y][x]['debug_marker_color'] is not None:
                     x_win = line_space + line_space * x
                     y_win = line_space + line_space * y
-                    cross_line_args = {'fill': self.game.board.content[y][x]['debug_marker_color'], 'width': self.w_board_sz // 200}
+                    cross_line_args = {'fill': self.game.board.content_desc[y][x]['debug_marker_color'], 'width': self.w_board_sz // 200}
                     self.board_canvas.create_line(int(x_win - line_space * 0.4), int(y_win - line_space * 0.4),
                                                     int(x_win + line_space * 0.4), int(y_win + line_space * 0.4),
                                                     **cross_line_args)
