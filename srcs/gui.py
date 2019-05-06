@@ -2,6 +2,7 @@ import os
 import time
 import tkinter as tk
 from platform import system as platform
+from srcs.utils.utils import complementaryColor
 from srcs.utils.clock import Clock
 from srcs.const import *
 
@@ -120,6 +121,11 @@ class Gui(object):
                 int(self.w_width_left * 0.9),
                 int(self.w_board_sz / len(self.game.players) * id_pl + self.w_board_sz / len(self.game.players) * 0.95),
                 fill=STONES[id_pl], outline=out_color, width=self.w_board_sz/100)
+            self.left_canvas.create_text(
+                int(self.w_width_left * 0.5),
+                int(self.w_board_sz / len(self.game.players) * id_pl + self.w_board_sz / len(self.game.players) * 0.15),
+                fill=complementaryColor(STONES[id_pl]), font="Times %d italic bold" % (self.w_width_left * 0.12),
+                text="Capture: %d/%d" % (self.game.players[id_pl].destroyed_stones_count, STONES_DESTROYED_VICTORY))
 
     def draw_board(self):
         """
