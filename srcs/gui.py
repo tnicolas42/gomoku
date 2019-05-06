@@ -121,16 +121,17 @@ class Gui(object):
                 int(self.w_width_left * 0.9),
                 int(self.w_board_sz / len(self.game.players) * id_pl + self.w_board_sz / len(self.game.players) * 0.95),
                 fill=STONES[id_pl], outline=out_color, width=self.w_board_sz/100)
-            self.left_canvas.create_text(
-                int(self.w_width_left * 0.5),
-                int(self.w_board_sz / len(self.game.players) * id_pl + self.w_board_sz / len(self.game.players) * 0.15),
-                fill=complementaryColor(STONES[id_pl]), font="Times %d italic bold" % (self.w_width_left * 0.12),
-                text="Stones: %d" % (self.game.players[id_pl].nb_stone))
-            self.left_canvas.create_text(
-                int(self.w_width_left * 0.5),
-                int(self.w_board_sz / len(self.game.players) * id_pl + self.w_board_sz / len(self.game.players) * 0.3),
-                fill=complementaryColor(STONES[id_pl]), font="Times %d italic bold" % (self.w_width_left * 0.12),
-                text="Capture: %d/%d" % (self.game.players[id_pl].destroyed_stones_count, STONES_DESTROYED_VICTORY))
+            if self.game.board.nb_total_stones > 0:
+                self.left_canvas.create_text(
+                    int(self.w_width_left * 0.5),
+                    int(self.w_board_sz / len(self.game.players) * id_pl + self.w_board_sz / len(self.game.players) * 0.15),
+                    fill=complementaryColor(STONES[id_pl]), font="Times %d italic bold" % (self.w_width_left * 0.12),
+                    text="Stones: %d : %d%%" % (self.game.players[id_pl].nb_stone, (self.game.players[id_pl].nb_stone / self.game.board.nb_total_stones * 100)))
+                self.left_canvas.create_text(
+                    int(self.w_width_left * 0.5),
+                    int(self.w_board_sz / len(self.game.players) * id_pl + self.w_board_sz / len(self.game.players) * 0.3),
+                    fill=complementaryColor(STONES[id_pl]), font="Times %d italic bold" % (self.w_width_left * 0.12),
+                    text="Capture: %d/%d" % (self.game.players[id_pl].destroyed_stones_count, STONES_DESTROYED_VICTORY))
 
     def draw_board(self):
         """
