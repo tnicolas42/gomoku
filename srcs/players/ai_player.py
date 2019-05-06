@@ -14,12 +14,13 @@ class AIPlayer(Player):
         -> put a stone on the board
         """
         depth = 2
-        nodes = Node(self.game, self.stone, -1, -1, depth, None)
+        nodes = Node(self.game, not self.stone, -1, -1, depth+1, None)
         move = min_max(nodes, depth, True)
         self.game.board.put_stone(move['node'].x, move['node'].y, self.stone)
 
 def heuristic(node):
-    return basic_heuristic(node.game, node.board.content, node.stone)
+    res = basic_heuristic(node.game, node.board.content, node.game.id_player_act)
+    return res
 
 def is_terminal_node(node):
     return len(node.childs) == 0

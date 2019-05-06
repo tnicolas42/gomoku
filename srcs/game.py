@@ -33,6 +33,8 @@ class Game(threading.Thread):
         """
         while not self.quit:
             for id_, player_act in enumerate(self.players):
+                if self.quit:
+                    return False
                 self.id_player_act = id_
                 player_act.move()
                 if player_act.has_win():

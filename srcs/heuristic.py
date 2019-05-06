@@ -146,7 +146,7 @@ def _check_stone(game, tested_board, player_id, x, y, check_return):
 H_BASIC_FREE_THREE = 30  # .AAA. .A.AA.
 H_BASIC_FREE_FOUR = 40  # .AAAA.
 H_BASIC_FOUR = 30  # BAAAA. AA.AA
-H_BASIC_WIN = 50  # AAAAA
+H_BASIC_WIN = 100  # AAAAA
 H_BASIC_VULNERABLILITY = -5  # BAA.
 
 def basic_heuristic(game, tested_board, player_id):
