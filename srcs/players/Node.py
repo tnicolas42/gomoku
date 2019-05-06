@@ -1,5 +1,7 @@
 from srcs.players.player import Player
-from srcs.board import Board
+from srcs.utils.stats import get_stats, get_and_print_stats
+from srcs.board import Board, SoftBoard
+
 
 class Node():
     """
@@ -19,7 +21,7 @@ class Node():
             parent_content = self.parent.board.content
         else:
             parent_content = self.game.board.content
-        self.board = Board(self.game, self.game.board.size, parent_content)
+        self.board = SoftBoard(self.game, self.game.board.size, parent_content)
         if self.x != -1 and self.y != -1:
             self.board.put_stone(self.x, self.y, self.stone, test=True)
 
