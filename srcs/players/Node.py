@@ -24,8 +24,6 @@ class Node():
             self.board.put_stone(self.x, self.y, self.stone, test=True)
 
         self.childs = []
-        if depth > 0:
-            self.setChilds()
 
     def setChilds(self):
         for y in range(self.board.size):

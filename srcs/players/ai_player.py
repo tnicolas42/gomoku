@@ -23,6 +23,7 @@ def heuristic(node):
     return res
 
 def is_terminal_node(node):
+    node.setChilds()
     return len(node.childs) == 0
 
 def min_max(node, depth, maximize, alpha, beta):
