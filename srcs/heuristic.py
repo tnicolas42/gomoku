@@ -1,7 +1,10 @@
 from srcs.const import *
 
 
-def check_aligned_dir(game, tested_board, player_id, x, y, stone, addx, addy, check_return):
+def _check_aligned_dir(game, tested_board, player_id, x, y, stone, addx, addy, check_return):
+    """
+    used to calc heuristic
+    """
     nb_aligned = 1  # number of aligned stones
     nb_almost_aligned = 1  # number of pseudo aligned stones (pseudo mean that there is a hole)
     free_side = [False, False]  # True if there is a free space around alignement
@@ -87,7 +90,7 @@ def check_aligned_dir(game, tested_board, player_id, x, y, stone, addx, addy, ch
             check_return['nb_free_three'] += 1 if player_id == stone else -1
 
 
-def check_vulnerability(game, tested_board, player_id, x, y, stone, check_return):
+def _check_vulnerability(game, tested_board, player_id, x, y, stone, check_return):
     """
     check the vulnerability of one stone
     """
@@ -120,7 +123,7 @@ def check_vulnerability(game, tested_board, player_id, x, y, stone, check_return
     return False
 
 
-def check_stone(game, tested_board, player_id, x, y, check_return):
+def _check_stone(game, tested_board, player_id, x, y, check_return):
     """
     on the stone, check ->
         the nb of free three
@@ -132,12 +135,12 @@ def check_stone(game, tested_board, player_id, x, y, check_return):
     if stone == STONE_EMPTY:
         return
 
-    check_vulnerability(game, tested_board, player_id, x, y, stone, check_return)
+    _check_vulnerability(game, tested_board, player_id, x, y, stone, check_return)
 
-    check_aligned_dir(game, tested_board, player_id, x, y, stone, -1, 0, check_return)
-    check_aligned_dir(game, tested_board, player_id, x, y, stone, 0, 1, check_return)
-    check_aligned_dir(game, tested_board, player_id, x, y, stone, 1, 1, check_return)
-    check_aligned_dir(game, tested_board, player_id, x, y, stone, 1, -1, check_return)
+    _check_aligned_dir(game, tested_board, player_id, x, y, stone, -1, 0, check_return)
+    _check_aligned_dir(game, tested_board, player_id, x, y, stone, 0, 1, check_return)
+    _check_aligned_dir(game, tested_board, player_id, x, y, stone, 1, 1, check_return)
+    _check_aligned_dir(game, tested_board, player_id, x, y, stone, 1, -1, check_return)
 
 
 H_BASIC_FREE_THREE = 30  # .AAA. .A.AA.
@@ -147,6 +150,11 @@ H_BASIC_WIN = 50  # AAAAA
 H_BASIC_VULNERABLILITY = -5  # BAA.
 
 def basic_heuristic(game, tested_board, player_id):
+    """
+    :param game: the Game object (self.game)
+    :param tested_board: this is the board to test
+    :param player_id: this is the id of the actual player (self.game.id_player_act)
+    """
     check_return = dict(
         nb_free_three=0,
         nb_free_four=0,
@@ -156,7 +164,7 @@ def basic_heuristic(game, tested_board, player_id):
     )
     for x in range(game.board.size):
         for y in range(game.board.size):
-            check_stone(game, tested_board, player_id, x, y, check_return)
+            _check_stone(game, tested_board, player_id, x, y, check_return)
 
     # a free three is calculated 3 times (for his 3 stones) so we need to divide it by 3
     # same thing for the others elements
