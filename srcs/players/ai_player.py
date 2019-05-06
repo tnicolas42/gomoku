@@ -44,10 +44,10 @@ def min_max(node, depth, maximize, alpha, beta):
                 maxlst = [child]
             elif childMin['cost'] == _max:
                 maxlst.append(child)
-            _node = random.choice(maxlst)
             alpha = max(alpha, _max)
             if beta <= alpha:
                 break
+        _node = random.choice(maxlst)
         return {'node': _node, 'cost': _max}
     else:
         _min = float('inf')
@@ -59,8 +59,8 @@ def min_max(node, depth, maximize, alpha, beta):
                 minlst = [child]
             elif childMax['cost'] == _min:
                 minlst.append(child)
-            _node = random.choice(minlst)
             beta = min(beta, _min)
             if beta <= alpha:
                 break
+        _node = random.choice(minlst)
         return {'node': _node, 'cost': _min}
