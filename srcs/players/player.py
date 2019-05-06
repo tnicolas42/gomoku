@@ -11,6 +11,7 @@ class Player(object):
     stone = None  # the stone -> int from 0 to n
     destroyed_stones_count = 0  # number of destroyed stones
     is_win_aligned = False  # == True if the player win because of 5 or more stones aligned (calculate on board.py)
+    nb_stone = 0  # == the number of stones on the board
 
     is_clicked_on = False
     clicked_pos = [0, 0]

@@ -225,8 +225,12 @@ class Board(object):
                 self.content[y][x]['debug_marker_color'] = None
 
     def check_winner(self):
+        for pl in self.game.players:
+            pl.nb_stone = 0
         for x in range(self.size):
             for y in range(self.size):
+                if self.content[y][x]['stone'] is not STONE_EMPTY:
+                    self.game.players[self.content[y][x]['stone']].nb_stone += 1
                 self.check_vulnerability(x, y)
 
         tmp_is_vulnerable_victory = False
