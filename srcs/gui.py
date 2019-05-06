@@ -2,6 +2,7 @@ import os
 import time
 import tkinter as tk
 from platform import system as platform
+from srcs.utils.utils import complementaryColor
 from srcs.utils.clock import Clock
 from srcs.const import *
 
@@ -88,6 +89,8 @@ class Gui(object):
     def keyPress(self, e):
         if e.keysym == "Escape":
             self.on_closing_window()
+        elif e.keysym in ("BackSpace", "Delete"):
+            self.game.board.reset_debug()
 
     def update(self):
         """
@@ -118,6 +121,17 @@ class Gui(object):
                 int(self.w_width_left * 0.9),
                 int(self.w_board_sz / len(self.game.players) * id_pl + self.w_board_sz / len(self.game.players) * 0.95),
                 fill=STONES[id_pl], outline=out_color, width=self.w_board_sz/100)
+            if self.game.board.nb_total_stones > 0:
+                self.left_canvas.create_text(
+                    int(self.w_width_left * 0.5),
+                    int(self.w_board_sz / len(self.game.players) * id_pl + self.w_board_sz / len(self.game.players) * 0.15),
+                    fill=complementaryColor(STONES[id_pl]), font="Times %d italic bold" % (self.w_width_left * 0.12),
+                    text="Stones: %d : %d%%" % (self.game.players[id_pl].nb_stone, (self.game.players[id_pl].nb_stone / self.game.board.nb_total_stones * 100)))
+                self.left_canvas.create_text(
+                    int(self.w_width_left * 0.5),
+                    int(self.w_board_sz / len(self.game.players) * id_pl + self.w_board_sz / len(self.game.players) * 0.3),
+                    fill=complementaryColor(STONES[id_pl]), font="Times %d italic bold" % (self.w_width_left * 0.12),
+                    text="Capture: %d/%d" % (self.game.players[id_pl].destroyed_stones_count, STONES_DESTROYED_VICTORY))
 
     def draw_board(self):
         """
@@ -144,6 +158,13 @@ class Gui(object):
             x2 = x1
             self.board_canvas.create_line(int(x1), int(y1), int(x2), int(y2), fill="black", width=line_width)
 
+        # add point
+        for x in range(self.game.board.size // 2 % 6, self.game.board.size, 6):
+            for y in range(self.game.board.size // 2 % 6, self.game.board.size, 6):
+                x_win = line_space + line_space * x
+                y_win = line_space + line_space * y
+                self.board_canvas.create_circle(int(x_win), int(y_win), int(line_space * 0.15), fill='black')
+
         # draw stones
         for y in range(self.game.board.size):
             for x in range(self.game.board.size):
@@ -151,7 +172,10 @@ class Gui(object):
                     x_win = line_space + line_space * x
                     y_win = line_space + line_space * y
                     create_args = {'fill': STONES[self.game.board.content[y][x]['stone']]}
-                    if self.game.board.content[y][x]['win']:
+                    if self.game.board.content[y][x]['debug_color'] is not None:
+                        create_args['outline'] = self.game.board.content[y][x]['debug_color']
+                        create_args['width'] = self.w_board_sz // 200
+                    elif self.game.board.content[y][x]['win']:
                         create_args['outline'] = 'green'
                         create_args['width'] = self.w_board_sz // 200
                     elif self.last_pos == [x, y]:
@@ -167,6 +191,16 @@ class Gui(object):
                     x_win = line_space + line_space * x
                     y_win = line_space + line_space * y
                     cross_line_args = {'fill': 'red', 'width': self.w_board_sz // 100}
+                    self.board_canvas.create_line(int(x_win - line_space * 0.4), int(y_win - line_space * 0.4),
+                                                    int(x_win + line_space * 0.4), int(y_win + line_space * 0.4),
+                                                    **cross_line_args)
+                    self.board_canvas.create_line(int(x_win + line_space * 0.4), int(y_win - line_space * 0.4),
+                                                    int(x_win - line_space * 0.4), int(y_win + line_space * 0.4),
+                                                    **cross_line_args)
+                if self.game.board.content[y][x]['debug_marker_color'] is not None:
+                    x_win = line_space + line_space * x
+                    y_win = line_space + line_space * y
+                    cross_line_args = {'fill': self.game.board.content[y][x]['debug_marker_color'], 'width': self.w_board_sz // 200}
                     self.board_canvas.create_line(int(x_win - line_space * 0.4), int(y_win - line_space * 0.4),
                                                     int(x_win + line_space * 0.4), int(y_win + line_space * 0.4),
                                                     **cross_line_args)
