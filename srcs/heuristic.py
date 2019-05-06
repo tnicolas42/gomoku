@@ -1,3 +1,4 @@
+from srcs.utils.stats import get_stats
 from srcs.const import *
 
 
@@ -89,7 +90,6 @@ def _check_aligned_dir(game, node, x, y, stone, addx, addy, check_return):
         if free_side[0] + free_side[1] == 2:  # .A.AA.  .AAA.
             check_return['nb_free_three'] += 1 if game.id_player_act == stone else -1
 
-
 def _check_stone(game, node, x, y, check_return):
     """
     on the stone, check ->
@@ -121,6 +121,7 @@ H_BASIC_WIN = 200  # AAAAA
 H_BASIC_VULNERABLILITY = -10  # BAA.
 H_BASIC_DESTROYED = 30  # ABBA -> A..A
 
+@get_stats
 def basic_heuristic(node):
     """
     :param game: the Game object (self.game)
