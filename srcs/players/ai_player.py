@@ -2,6 +2,7 @@ import time
 import random
 from srcs.players.player import Player
 from srcs.players.Node import Node
+from srcs.heuristic import basic_heuristic
 
 class AIPlayer(Player):
     def __init__(self, *args, **kwargs):
@@ -18,7 +19,7 @@ class AIPlayer(Player):
         self.game.board.put_stone(move['node'].x, move['node'].y, self.stone)
 
 def heuristic(node):
-    return random.randint(-1000, 1000)
+    return basic_heuristic(node.game, node.board.content, node.stone)
 
 def is_terminal_node(node):
     return len(node.childs) == 0
