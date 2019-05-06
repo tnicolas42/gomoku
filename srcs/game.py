@@ -1,6 +1,7 @@
 import time
 import threading
 from srcs.heuristic import basic_heuristic
+from srcs.utils.stats import *
 
 class Game(threading.Thread):
     """
@@ -24,8 +25,7 @@ class Game(threading.Thread):
         self.players = players
         self.gui = gui
 
-
-
+    @get_stats
     def run(self):
         """
         main function of the program
