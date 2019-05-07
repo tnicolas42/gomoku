@@ -1,7 +1,7 @@
 from srcs.players.player import Player
 from srcs.utils.stats import get_stats, get_and_print_stats
 from srcs.board import Board, SoftBoard
-
+from srcs.const import *
 
 class Node():
     """
@@ -27,9 +27,18 @@ class Node():
 
         self.childs = []
 
+    @get_stats
     def setChilds(self):
+        testChilds = dict()
         for y in range(self.board.size):
             for x in range(self.board.size):
-                if self.board.is_allowed(x, y, not self.stone):
-                    if not self.parent or (self.parent and not (self.parent.x == x and self.parent.y == y)):
-                        self.childs.append(Node(self.game, not self.stone, x, y, self.depth - 1, self))
+                if self.board.content[y][x] is not STONE_EMPTY:
+                    # add the squares arround the curent pos to testChilds
+                    for _y in range(y - NB_SQUARE_ARROUND, y + NB_SQUARE_ARROUND):
+                        for _x in range(x - NB_SQUARE_ARROUND, x + NB_SQUARE_ARROUND):
+                            if _x >= 0 and _x < self.board.size and _y >= 0 and _y < self.board.size:
+                                testChilds[(_y, _x)] = True
+
+        for y, x in testChilds:
+            if self.board.is_allowed(x, y, not self.stone):
+                self.childs.append(Node(self.game, not self.stone, x, y, self.depth - 1, self))

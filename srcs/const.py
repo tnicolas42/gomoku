@@ -20,3 +20,6 @@ STONES_DESTROYED_VICTORY = 10
 
 # if a player align at least NB_ALIGNED_VICTORY and if there is no way to destroy the aligned stones -> he win
 NB_ALIGNED_VICTORY = 5
+
+# the number of squares arround taked pos to limit search zone
+NB_SQUARE_ARROUND = 2

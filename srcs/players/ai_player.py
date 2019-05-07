@@ -16,9 +16,13 @@ class AIPlayer(Player):
         -> put a stone on the board
         """
         depth = 2
-        nodes = Node(self.game, not self.stone, -1, -1, depth+1, None)
-        move = min_max(nodes, depth, True, float('-inf'), float('inf'))
-        self.game.board.put_stone(move['node'].x, move['node'].y, self.stone)
+        # put the first stone in the middle
+        if (self.game.board.remain_places == self.game.board.size * self.game.board.size):
+            self.game.board.put_stone(int(self.game.board.size / 2), int(self.game.board.size / 2), self.stone)
+        else:
+            nodes = Node(self.game, not self.stone, -1, -1, depth+1, None)
+            move = min_max(nodes, depth, True, float('-inf'), float('inf'))
+            self.game.board.put_stone(move['node'].x, move['node'].y, self.stone)
 
 def heuristic(node):
     res = basic_heuristic(node)
