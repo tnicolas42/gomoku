@@ -22,4 +22,11 @@ STONES_DESTROYED_VICTORY = 10
 NB_ALIGNED_VICTORY = 5
 
 # the number of squares arround taked pos to limit search zone
-NB_SQUARE_ARROUND = 2
+NB_SQUARE_ARROUND = 1
+
+# the depth of the algorithm
+DEPTH = 3
+
+# used to count more the positive or negative action in heuristic
+H_POSITIVE_MULTIPLIER = 1  # positive number
+H_NEGATIVE_MULTIPLIER = -1.5  # negative number

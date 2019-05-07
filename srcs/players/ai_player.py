@@ -16,20 +16,19 @@ class AIPlayer(Player):
         this function is called when the AI need to move
         -> put a stone on the board
         """
-        depth = 2
         # put the first stone in the middle
         if (self.game.board.remain_places == self.game.board.size * self.game.board.size):
             self.game.board.put_stone(int(self.game.board.size / 2), int(self.game.board.size / 2), self.stone)
         else:
             transpositionTable = {}
-            nodes = Node(self.game, transpositionTable, not self.stone, -1, -1, depth+1, None)
-            move = min_max(nodes, depth, True, float('-inf'), float('inf'))
-            print('heurisitic: %f' % (get_heuristic(move['node'], printDebug=True)))
-            for x in range(self.game.board.size):
-                for y in range(self.game.board.size):
-                    if self.game.board.content[y][x] == STONE_EMPTY:
-                        if move['node'].board.content[y][x] != STONE_EMPTY:
-                            self.game.board.content_desc[y][x]['debug_marker_color'] = STONES[move['node'].board.content[y][x]]
+            nodes = Node(self.game, transpositionTable, not self.stone, -1, -1, DEPTH+1, None)
+            move = min_max(nodes, DEPTH, True, float('-inf'), float('inf'))
+            # print('heurisitic: %f' % (get_heuristic(move['node'], printDebug=True)))
+            # for x in range(self.game.board.size):
+            #     for y in range(self.game.board.size):
+            #         if self.game.board.content[y][x] == STONE_EMPTY:
+            #             if move['node'].board.content[y][x] != STONE_EMPTY:
+            #                 self.game.board.content_desc[y][x]['debug_marker_color'] = STONES[move['node'].board.content[y][x]]
             node = move['node']
             while node.parent.parent:
                 node = node.parent

@@ -37,12 +37,14 @@ class Node():
             for x in range(self.board.size):
                 if self.board.content[y][x] is not STONE_EMPTY:
                     # add the squares arround the curent pos to testChilds
-                    for _y in range(y - NB_SQUARE_ARROUND, y + NB_SQUARE_ARROUND):
-                        for _x in range(x - NB_SQUARE_ARROUND, x + NB_SQUARE_ARROUND):
+                    for _y in range(y - NB_SQUARE_ARROUND, y + NB_SQUARE_ARROUND + 1):
+                        for _x in range(x - NB_SQUARE_ARROUND, x + NB_SQUARE_ARROUND + 1):
                             if _x >= 0 and _x < self.board.size and _y >= 0 and _y < self.board.size:
                                 testChilds[(_y, _x)] = True
 
+        # self.game.board.reset_debug()
         for y, x in testChilds:
             if self.board.is_allowed(x, y, not self.stone):
+                # self.game.board.content_desc[y][x]['debug_marker_color'] = 'red'
                 self.childs.append(Node(self.game, self.transpositionTable, not self.stone, x, y, self.depth - 1, self))
 
