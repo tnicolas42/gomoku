@@ -84,6 +84,14 @@ def _check_aligned_dir(game, node, x, y, stone, addx, addy, check_return):
             check_return['nb_free_four'] += 1 if game.id_player_act == stone else -1
         elif free_side[0] + free_side[1] == 1:  # BAAAA.
             check_return['nb_four'] += 1 if game.id_player_act == stone else -1
+    elif nb_aligned >= 3:
+        if free_side[0] + free_side[1] == 2:  # .AAA.
+            check_return['nb_free_three'] += 1 if game.id_player_act == stone else -1
+        elif free_side[0] + free_side[1] == 1:  # BAAA.
+            check_return['nb_three'] += 1 if game.id_player_act == stone else -1
+    elif nb_aligned >= 2:
+        if free_side[0] + free_side[1] >= 1:  # .AA. BAA.
+            check_return['nb_two'] += 1 if game.id_player_act == stone else -1
     elif nb_almost_aligned >= 4:  # AA.AA  AAA.AA
         check_return['nb_four'] += 1 if game.id_player_act == stone else -1
     elif nb_almost_aligned == 3:
@@ -114,6 +122,8 @@ def _check_stone(game, node, x, y, check_return):
         check_return['nb_destroyed'] += len(nb_destroyed) * (1 if game.id_player_act == stone else -1)
 
 
+H_BASIC_TWO = 10  # .AA. BAA.
+H_BASIC_THREE = 30  # BAAA.
 H_BASIC_FREE_THREE = 80  # .AAA. .A.AA.
 H_BASIC_FREE_FOUR = 300  # .AAAA.
 H_BASIC_FOUR = 100  # BAAAA. AA.AA
@@ -138,6 +148,8 @@ def basic_heuristic(node):
         return node.transpositionTable[hash_node]
 
     check_return = dict(
+        nb_three=0,
+        nb_two=0,
         nb_free_three=0,
         nb_free_four=0,
         nb_four=0,
@@ -152,6 +164,8 @@ def basic_heuristic(node):
     # a free three is calculated 3 times (for his 3 stones) so we need to divide it by 3
     # same thing for the others elements
     # !!! nb_vulnerable is the nmber of vulnerable pieces
+    check_return['nb_two'] /= 2
+    check_return['nb_three'] /= 3
     check_return['nb_free_three'] /= 3
     check_return['nb_four'] /= 4
     check_return['nb_free_four'] /= 4
@@ -164,6 +178,8 @@ def basic_heuristic(node):
     # print("nb_vulnerable: %d " % (check_return['nb_vulnerable']))
 
     # apply a value
+    check_return['nb_two'] *= H_BASIC_TWO
+    check_return['nb_three'] *= H_BASIC_THREE
     check_return['nb_free_three'] *= H_BASIC_FREE_THREE
     check_return['nb_free_four'] *= H_BASIC_FREE_FOUR
     check_return['nb_four'] *= H_BASIC_FOUR
