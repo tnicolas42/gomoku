@@ -369,7 +369,7 @@ class SoftBoard(object):
                 if self.content[y][x] == STONE_EMPTY:
                     pass
                 elif self.content[y][x] == 0:
-                    color = [c.BLACK, c.F_BLACK]
+                    color = [c.CYAN, c.F_CYAN]
                 elif self.content[y][x] == 1:
                     color = [c.WHITE, c.F_WHITE]
                 elif self.content[y][x] == 2:
@@ -383,7 +383,7 @@ class SoftBoard(object):
                 elif self.content[y][x] == 6:
                     color = [c.MAGENTA, c.F_MAGENTA]
                 elif self.content[y][x] == 7:
-                    color = [c.CYAN, c.F_CYAN]
+                    color = [c.BLACK, c.F_BLACK]
                 else:
                     txt = '%2d ' % (self.content[y][x])
                 s += color[0] + color[1] + txt + c.EOC
