@@ -1,3 +1,4 @@
+import time
 import random
 from srcs.const import *
 
@@ -15,10 +16,17 @@ class Player(object):
 
     is_clicked_on = False
     clicked_pos = [0, 0]
+    time_last_move = 0.0
 
     def __init__(self, game, stone):
         self.game = game
         self.stone = stone
+
+    def moving(self):
+        before = time.time()
+        ret = self.move()
+        self.time_last_move = time.time() - before
+        return ret
 
     def move(self):
         """

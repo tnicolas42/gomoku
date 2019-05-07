@@ -36,7 +36,7 @@ class Game(threading.Thread):
                 if self.quit:
                     return False
                 self.id_player_act = id_
-                player_act.move()
+                player_act.moving()
                 if player_act.has_win():
                     print(self.board)
                     print("player %d has win" % (self.id_player_act))

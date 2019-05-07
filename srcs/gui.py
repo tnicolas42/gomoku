@@ -132,6 +132,11 @@ class Gui(object):
                     int(self.w_board_sz / len(self.game.players) * id_pl + self.w_board_sz / len(self.game.players) * 0.3),
                     fill=complementaryColor(STONES[id_pl]), font="Times %d italic bold" % (self.w_width_left * 0.1),
                     text="Capture: %d/%d" % (self.game.players[id_pl].destroyed_stones_count, STONES_DESTROYED_VICTORY))
+                self.left_canvas.create_text(
+                    int(self.w_width_left * 0.5),
+                    int(self.w_board_sz / len(self.game.players) * id_pl + self.w_board_sz / len(self.game.players) * 0.45),
+                    fill=complementaryColor(STONES[id_pl]), font="Times %d italic bold" % (self.w_width_left * 0.1),
+                    text="%.2fs" % (self.game.players[id_pl].time_last_move))
 
     def draw_board(self):
         """
