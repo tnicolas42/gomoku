@@ -1,7 +1,8 @@
-from srcs.players.player import Player
-from srcs.utils.stats import get_stats, get_and_print_stats
 from srcs.board import Board, SoftBoard
 from srcs.const import *
+from srcs.players.player import Player
+from srcs.utils.stats import *
+
 
 class Node():
     """
@@ -10,8 +11,10 @@ class Node():
     def __repr__(self):
         return '(' + str(self.x) + ':' + str(self.y) + ')'
 
-    def __init__(self, game, stone, x, y, depth, parent=None):
+    @get_stats
+    def __init__(self, game, transpositionTable, stone, x, y, depth, parent=None):
         self.game = game
+        self.transpositionTable = transpositionTable
         self.parent = parent
         self.stone = stone
         self.x = x
@@ -41,4 +44,5 @@ class Node():
 
         for y, x in testChilds:
             if self.board.is_allowed(x, y, not self.stone):
-                self.childs.append(Node(self.game, not self.stone, x, y, self.depth - 1, self))
+                self.childs.append(Node(self.game, self.transpositionTable, not self.stone, x, y, self.depth - 1, self))
+

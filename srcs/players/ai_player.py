@@ -20,7 +20,8 @@ class AIPlayer(Player):
         if (self.game.board.remain_places == self.game.board.size * self.game.board.size):
             self.game.board.put_stone(int(self.game.board.size / 2), int(self.game.board.size / 2), self.stone)
         else:
-            nodes = Node(self.game, not self.stone, -1, -1, depth+1, None)
+            transpositionTable = {}
+            nodes = Node(self.game, transpositionTable, not self.stone, -1, -1, depth+1, None)
             move = min_max(nodes, depth, True, float('-inf'), float('inf'))
             self.game.board.put_stone(move['node'].x, move['node'].y, self.stone)
 

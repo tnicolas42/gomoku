@@ -114,12 +114,15 @@ def _check_stone(game, node, x, y, check_return):
         check_return['nb_destroyed'] += len(nb_destroyed) * (1 if game.id_player_act == stone else -1)
 
 
-H_BASIC_FREE_THREE = 50  # .AAA. .A.AA.
-H_BASIC_FREE_FOUR = 100  # .AAAA.
-H_BASIC_FOUR = 30  # BAAAA. AA.AA
-H_BASIC_WIN = 200  # AAAAA
+H_BASIC_FREE_THREE = 80  # .AAA. .A.AA.
+H_BASIC_FREE_FOUR = 300  # .AAAA.
+H_BASIC_FOUR = 100  # BAAAA. AA.AA
+H_BASIC_WIN = 1000  # AAAAA
 H_BASIC_VULNERABLILITY = -10  # BAA.
-H_BASIC_DESTROYED = 30  # ABBA -> A..A
+H_BASIC_DESTROYED = 100  # ABBA -> A..A
+
+def get_hash(node):
+    return hash(str(node.board.content))
 
 @get_stats
 def basic_heuristic(node):
@@ -129,6 +132,11 @@ def basic_heuristic(node):
     :param player_id: this is the id of the actual player (self.game.id_player_act)
     """
     game = node.game
+
+    hash_node = get_hash(node)
+    if hash_node in node.transpositionTable:
+        return node.transpositionTable[hash_node]
+
     check_return = dict(
         nb_free_three=0,
         nb_free_four=0,
@@ -163,8 +171,9 @@ def basic_heuristic(node):
     check_return['nb_vulnerable'] *= H_BASIC_VULNERABLILITY
     check_return['nb_destroyed'] *= H_BASIC_DESTROYED
 
-
     heuristic = 0
     for k in check_return:
         heuristic += check_return[k]
+
+    node.transpositionTable[hash_node] = heuristic
     return heuristic
