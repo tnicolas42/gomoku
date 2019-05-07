@@ -393,7 +393,7 @@ class SoftBoard(object):
                 s += '*'
             s += '---'
         if i == self.size - 1:
-            s += '*\n'
+            s += '*'
         return s
 
 class Board(SoftBoard):

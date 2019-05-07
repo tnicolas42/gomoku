@@ -1,9 +1,10 @@
 import time
 import random
-from srcs.heuristic import basic_heuristic
-from srcs.utils.stats import *
+from srcs.heuristic import get_heuristic
 from srcs.players.player import Player
 from srcs.players.Node import Node
+from srcs.utils.stats import *
+from srcs.const import *
 
 class AIPlayer(Player):
     def __init__(self, *args, **kwargs):
@@ -23,10 +24,19 @@ class AIPlayer(Player):
             transpositionTable = {}
             nodes = Node(self.game, transpositionTable, not self.stone, -1, -1, depth+1, None)
             move = min_max(nodes, depth, True, float('-inf'), float('inf'))
-            self.game.board.put_stone(move['node'].x, move['node'].y, self.stone)
+            print('heurisitic: %f' % (get_heuristic(move['node'], printDebug=True)))
+            for x in range(self.game.board.size):
+                for y in range(self.game.board.size):
+                    if self.game.board.content[y][x] == STONE_EMPTY:
+                        if move['node'].board.content[y][x] != STONE_EMPTY:
+                            self.game.board.content_desc[y][x]['debug_marker_color'] = STONES[move['node'].board.content[y][x]]
+            node = move['node']
+            while node.parent.parent:
+                node = node.parent
+            self.game.board.put_stone(node.x, node.y, self.stone)
 
 def heuristic(node):
-    res = basic_heuristic(node)
+    res = get_heuristic(node)
     return res
 
 def is_terminal_node(node):
@@ -46,13 +56,16 @@ def min_max(node, depth, maximize, alpha, beta):
             childMin = min_max(child, depth-1, False, alpha, beta)
             if childMin['cost'] > _max:
                 _max = childMin['cost']
-                maxlst = [child]
+                maxlst = [childMin['node']]
+                # maxlst = [child]
             elif childMin['cost'] == _max:
-                maxlst.append(child)
+                maxlst.append(childMin['node'])
+                # maxlst.append(child)
             alpha = max(alpha, _max)
             if beta <= alpha:
                 break
-        _node = random.choice(maxlst)
+        # _node = random.choice(maxlst)
+        _node = maxlst[0]
         return {'node': _node, 'cost': _max}
     else:
         _min = float('inf')
@@ -61,11 +74,14 @@ def min_max(node, depth, maximize, alpha, beta):
             childMax = min_max(child, depth-1, True, alpha, beta)
             if childMax['cost'] < _min:
                 _min = childMax['cost']
-                minlst = [child]
+                minlst = [childMax['node']]
+                # minlst = [child]
             elif childMax['cost'] == _min:
-                minlst.append(child)
+                minlst.append(childMax['node'])
+                # minlst.append(child)
             beta = min(beta, _min)
             if beta <= alpha:
                 break
-        _node = random.choice(minlst)
+        # _node = random.choice(minlst)
+        _node = minlst[0]
         return {'node': _node, 'cost': _min}
