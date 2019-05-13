@@ -30,3 +30,13 @@ DEPTH = 3
 # used to count more the positive or negative action in heuristic
 H_POSITIVE_MULTIPLIER = 1  # positive number
 H_NEGATIVE_MULTIPLIER = -2  # negative number
+
+H_SELECT_TWO = 10 // 2  # .AA. BAA.
+H_SELECT_FREE_TWO = 15 // 2  # .AA. BAA.
+H_SELECT_THREE = 30 // 3  # BAAA.
+H_SELECT_FREE_THREE = 80 // 3  # .AAA. .A.AA.
+H_SELECT_FREE_FOUR = 300 // 4  # .AAAA.
+H_SELECT_FOUR = 100 // 4  # BAAAA. AA.AA
+H_SELECT_WIN = 1000 // 5  # AAAAA
+H_SELECT_VULNERABLILITY = -35  # BAA.
+H_SELECT_DESTROYED = 90  # ABBA -> A..A
