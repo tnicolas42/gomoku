@@ -17,15 +17,15 @@ class AIPlayer(Player):
         -> put a stone on the board
         """
         # put the first stone in the middle
-        if (self.game.board.remain_places == self.game.board.size * self.game.board.size):
-            self.game.board.put_stone(int(self.game.board.size / 2), int(self.game.board.size / 2), self.stone)
+        if (self.game.board.remain_places == G.BOARD_SZ * G.BOARD_SZ):
+            self.game.board.put_stone(int(G.BOARD_SZ / 2), int(G.BOARD_SZ / 2), self.stone)
         else:
             transpositionTable = {}
             nodes = Node(self.game, transpositionTable, not self.stone, -1, -1, G.DEPTH+1, None)
             move = min_max(nodes, G.DEPTH, True, float('-inf'), float('inf'))
             if G.DEBUG_ANTICIPATION:
-                for x in range(self.game.board.size):
-                    for y in range(self.game.board.size):
+                for x in range(G.BOARD_SZ):
+                    for y in range(G.BOARD_SZ):
                         if self.game.board.content[y][x] == STONE_EMPTY:
                             if move['node'].board.content[y][x] != STONE_EMPTY:
                                 self.game.board.content_desc[y][x]['debug_marker_color'] = STONES[move['node'].board.content[y][x]]

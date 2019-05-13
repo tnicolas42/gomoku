@@ -3,28 +3,17 @@ import sys
 import time
 import argparse
 from srcs.utils.stats import EnableStats, print_stats
-from srcs.players.real_player import RealPlayer
-from srcs.players.ai_player import AIPlayer
 from srcs.board import Board
-from srcs.game import Game
-from srcs.gui import Gui
+from srcs.game import Game, player_types
+from srcs.gui.main_gui import Gui
 from srcs.const import *
-
-player_types = dict(
-    REAL=RealPlayer,
-    AI=AIPlayer,
-)
-board = None
-players = []
-gui = None
-game = None
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--players', type=str, choices=player_types.keys(), nargs='+', required=False, default=["REAL", "AI"],
+    parser.add_argument('--players', type=str, choices=player_types.keys(), nargs='+', required=False, default=G.PLAYERS,
                             help="this is the players list (--players AI REAL ...) -> max %d players" % (len(STONES)))
 
-    parser.add_argument('--board-size', type=int, default=19, choices=range(1,101), metavar="[1-100]",
+    parser.add_argument('--board-size', type=int, default=G.BOARD_SZ, choices=range(1,51), metavar="[1-50]",
                             help="this is the size of the board")
 
     parser.add_argument("--w-size-percent", type=int, default=80, choices=range(30,101), metavar="[30-100]",
@@ -41,12 +30,14 @@ if __name__ == '__main__':
         exit(1)
     EnableStats.enable = args.stats
 
+    G.BOARD_SZ = args.board_size
+    G.SHOW_VULNERABILITY = args.show_vulnerability
+    if len(args.players) >= 2:
+        G.PLAYERS = args.players
+
     game = Game()
-    board = Board(game=game, size=args.board_size)
-    for id_, player in enumerate(args.players):
-        players.append(player_types[player](game=game, stone=id_))
-    gui = Gui(game=game, w_size_percent=args.w_size_percent, show_vulnerability=args.show_vulnerability)
-    game.init(board=board, players=players, gui=gui)
+    gui = Gui(game=game, w_size_percent=args.w_size_percent)
+    game.gui = gui
 
     game.start()
     gui.run()

@@ -15,7 +15,12 @@ STONES = (
     "#00FFFF",
 )
 
+BG_COLOR = "#F6AA49"
+
 class G:  # class with all global variables
+    BOARD_SZ = 19
+    PLAYERS = ["REAL", "AI"]
+
     # if a player destroy STONES_DESTROYED_VICTORY -> he win
     STONES_DESTROYED_VICTORY = 10
 
@@ -49,3 +54,4 @@ class G:  # class with all global variables
 
     DEBUG_ANTICIPATION = False  # print the anticipation
     DEBUG_SEARCH_ZONE = False  # print the search zone
+    SHOW_VULNERABILITY = False

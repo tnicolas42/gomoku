@@ -14,7 +14,7 @@ def _check_aligned_dir(game, node, x, y, stone, addx, addy, check_return, multip
     new_y = y + addy
     while 1:
         # if out of bound
-        if not (0 <= new_x < game.board.size and 0 <= new_y < game.board.size):
+        if not (0 <= new_x < G.BOARD_SZ and 0 <= new_y < G.BOARD_SZ):
             if node.board.content[new_y - addy][new_x - addx] == STONE_EMPTY:
                 free_side[0] = True
             break
@@ -47,7 +47,7 @@ def _check_aligned_dir(game, node, x, y, stone, addx, addy, check_return, multip
     new_y = y - addy
     while 1:
         # if out of bound
-        if not (0 <= new_x < game.board.size and 0 <= new_y < game.board.size):
+        if not (0 <= new_x < G.BOARD_SZ and 0 <= new_y < G.BOARD_SZ):
             if node.board.content[new_y + addy][new_x + addx] == STONE_EMPTY:
                 free_side[0] = True
             break
@@ -170,8 +170,8 @@ def selective_heuristic(node, printDebug=False):
     if hash_node in node.transpositionTable:
         check_return = node.transpositionTable[hash_node]
     else:
-        for x in range(game.board.size):
-            for y in range(game.board.size):
+        for x in range(G.BOARD_SZ):
+            for y in range(G.BOARD_SZ):
                 _check_stone(game, node, x, y, check_return)
 
     if hash_node not in node.transpositionTable:

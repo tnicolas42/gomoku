@@ -1,7 +1,15 @@
 import time
 import threading
+from srcs.players.real_player import RealPlayer
+from srcs.players.ai_player import AIPlayer
 from srcs.utils.stats import *
+from srcs.board import Board
+from srcs.const import *
 
+player_types = dict(
+    REAL=RealPlayer,
+    AI=AIPlayer,
+)
 class Game(threading.Thread):
     """
     this is the main object
@@ -24,6 +32,12 @@ class Game(threading.Thread):
         self.players = players
         self.gui = gui
 
+    def reinit(self):
+        self.board = Board(game=self)
+        self.players = []
+        for id_, player in enumerate(G.PLAYERS):
+            self.players.append(player_types[player](game=self, stone=id_))
+
     @get_stats
     def run(self):
         """
@@ -31,6 +45,9 @@ class Game(threading.Thread):
         this function run the game -> play all players turn, check if there is a winner, ...
         """
         while not self.quit:
+            if self.players is None or self.board is None:
+                time.sleep(0.1)
+                continue
             for id_, player_act in enumerate(self.players):
                 if self.quit:
                     return False
