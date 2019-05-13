@@ -43,7 +43,7 @@ class G:  # class with all global variables
     H_SELECT_VULNERABLILITY = -35  # BAA. Multiplied by the number of destroyed stones + 1
     H_SELECT_DESTROYED = 150  # ABBA -> A..A Multiplied by the number of destroyed stones + 1
 
-    H_SELECT_DESTROY_VICTORY_ADDER = 30  # if this is the last destroyed stone, mul this stone by H_SELECT_DESTROY_VICTORY_ADDER
+    H_SELECT_DESTROY_VICTORY_ADDER = 10  # if this is the last destroyed stone, mul this stone by H_SELECT_DESTROY_VICTORY_ADDER
 
     MINMAX_RANDOM_CHOICE = True  # choose a random position if we have the choice
 

@@ -116,21 +116,18 @@ def _check_stone(game, node, x, y, check_return, multiplier=1):
         mul = 1
         if game.players[stone].destroyed_stones_count + 2 >= G.STONES_DESTROYED_VICTORY:
             mul = G.H_SELECT_DESTROY_VICTORY_ADDER
-            print("vulnerable")
         check_return['nb_vulnerable'] += mul * (game.players[stone].destroyed_stones_count + 1) * multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
     _check_aligned_dir(game, node, x, y, stone, -1, 0, check_return, multiplier=multiplier)
     _check_aligned_dir(game, node, x, y, stone, 0, 1, check_return, multiplier=multiplier)
     _check_aligned_dir(game, node, x, y, stone, 1, 1, check_return, multiplier=multiplier)
     _check_aligned_dir(game, node, x, y, stone, 1, -1, check_return, multiplier=multiplier)
 
-    nb_destroyed = node.board.check_destroyable(x, y, stone)
-    if len(nb_destroyed) > 0:
-        mul = 1
-        if game.players[stone].destroyed_stones_count + len(nb_destroyed) >= G.STONES_DESTROYED_VICTORY:
-            mul = G.H_SELECT_DESTROY_VICTORY_ADDER
-            print("destroyable")
-        check_return['nb_destroyed'] += mul * (game.players[stone].destroyed_stones_count + 1) * multiplier * len(nb_destroyed) * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
-
+    # nb_destroyed = node.board.check_destroyable(x, y, stone)
+    # if len(nb_destroyed) > 0:
+    #     mul = 1
+    #     if game.players[stone].destroyed_stones_count + len(nb_destroyed) >= G.STONES_DESTROYED_VICTORY:
+    #         mul = G.H_SELECT_DESTROY_VICTORY_ADDER
+    #     check_return['nb_destroyed'] += mul * (game.players[stone].destroyed_stones_count + 1) * multiplier * len(nb_destroyed) * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
 
 def get_hash(node):
     return hash(str(node.board.content))
@@ -166,8 +163,13 @@ def selective_heuristic(node, printDebug=False):
     lenhist = len(node_hist)
     for i, (x, y, stone) in enumerate(node_hist):
         if node.board.is_allowed(x, y, stone):
-            node.board.put_stone(x, y, stone, test=True)
+            nb_destroyed = node.board.put_stone(x, y, stone, test=True)
             mul = ((lenhist+1)>>1) - (i>>1) + 1
+            if nb_destroyed > 0:
+                mul = 1
+                if game.players[stone].destroyed_stones_count + nb_destroyed >= G.STONES_DESTROYED_VICTORY:
+                    mul = G.H_SELECT_DESTROY_VICTORY_ADDER
+                check_return['nb_destroyed'] += mul * (game.players[stone].destroyed_stones_count + 1) * mul * nb_destroyed * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
             _check_stone(game, node, x, y, check_return,
                         multiplier=mul)
         else:

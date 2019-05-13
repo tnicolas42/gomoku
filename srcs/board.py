@@ -272,6 +272,8 @@ class SoftBoard(object):
             # check aif there is a winner
             self.check_winner()
 
+        return len(destroyed)
+
     def _is_free_three_dir(self, x, y, stone, addx, addy):
         """
         check if there is a free three from 'x' 'y' in direction given by 'addx' and 'addy'
