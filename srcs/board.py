@@ -152,14 +152,14 @@ class SoftBoard(object):
                 break
             new_x -= addx
             new_y -= addy
-        if nb_aligned >= NB_ALIGNED_VICTORY:
+        if nb_aligned >= G.NB_ALIGNED_VICTORY:
             if not check_only:
                 new_x = x
                 new_y = y
                 while 0 <= new_x < self.size and 0 <= new_y < self.size:
                     if self.content[new_y][new_x] == stone:
                         if not self.softMode and \
-                           (self.is_vulnerable_victory[stone] or nb_aligned_non_vulnerable >= NB_ALIGNED_VICTORY):
+                           (self.is_vulnerable_victory[stone] or nb_aligned_non_vulnerable >= G.NB_ALIGNED_VICTORY):
                             self.content_desc[new_y][new_x]['win'] = True
                     else:
                         break
@@ -170,13 +170,13 @@ class SoftBoard(object):
                 while 0 <= new_x < self.size and 0 <= new_y < self.size:
                     if self.content[new_y][new_x] == stone:
                         if not self.softMode and \
-                           (self.is_vulnerable_victory[stone] or nb_aligned_non_vulnerable >= NB_ALIGNED_VICTORY):
+                           (self.is_vulnerable_victory[stone] or nb_aligned_non_vulnerable >= G.NB_ALIGNED_VICTORY):
                             self.content_desc[new_y][new_x]['win'] = True
                     else:
                         break
                     new_x -= addx
                     new_y -= addy
-            if nb_aligned_non_vulnerable >= NB_ALIGNED_VICTORY:
+            if nb_aligned_non_vulnerable >= G.NB_ALIGNED_VICTORY:
                 return True, True  # nb_aligned == OK, not_vulnerable == True
             else:
                 return True, False  # nb_aligned == OK, not_vulerable == False -> wait one turn before win

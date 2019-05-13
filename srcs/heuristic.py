@@ -77,28 +77,28 @@ def _check_aligned_dir(game, node, x, y, stone, addx, addy, check_return, multip
         new_x -= addx
         new_y -= addy
 
-    if nb_aligned >= NB_ALIGNED_VICTORY:  # AAAAA
-        check_return['nb_win'] += multiplier * (H_POSITIVE_MULTIPLIER if game.id_player_act == stone else H_NEGATIVE_MULTIPLIER)
+    if nb_aligned >= G.NB_ALIGNED_VICTORY:  # AAAAA
+        check_return['nb_win'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
     elif nb_aligned >= 4:
         if free_side[0] + free_side[1] == 2:  # .AAAA.
-            check_return['nb_free_four'] += multiplier * (H_POSITIVE_MULTIPLIER if game.id_player_act == stone else H_NEGATIVE_MULTIPLIER)
+            check_return['nb_free_four'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
         elif free_side[0] + free_side[1] == 1:  # BAAAA.
-            check_return['nb_four'] += multiplier * (H_POSITIVE_MULTIPLIER if game.id_player_act == stone else H_NEGATIVE_MULTIPLIER)
+            check_return['nb_four'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
     elif nb_aligned >= 3:
         if free_side[0] + free_side[1] == 2:  # .AAA.
-            check_return['nb_free_three'] += multiplier * (H_POSITIVE_MULTIPLIER if game.id_player_act == stone else H_NEGATIVE_MULTIPLIER)
+            check_return['nb_free_three'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
         elif free_side[0] + free_side[1] == 1:  # BAAA.
-            check_return['nb_three'] += multiplier * (H_POSITIVE_MULTIPLIER if game.id_player_act == stone else H_NEGATIVE_MULTIPLIER)
+            check_return['nb_three'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
     elif nb_aligned >= 2:
         if free_side[0] + free_side[1] == 2:  # .AA.
-            check_return['nb_free_two'] += multiplier * (H_POSITIVE_MULTIPLIER if game.id_player_act == stone else H_NEGATIVE_MULTIPLIER)
+            check_return['nb_free_two'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
         elif free_side[0] + free_side[1] == 1:  # BAA.
-            check_return['nb_two'] += multiplier * (H_POSITIVE_MULTIPLIER if game.id_player_act == stone else H_NEGATIVE_MULTIPLIER)
+            check_return['nb_two'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
     elif nb_almost_aligned >= 4:  # AA.AA  AAA.AA
-        check_return['nb_four'] += multiplier * (H_POSITIVE_MULTIPLIER if game.id_player_act == stone else H_NEGATIVE_MULTIPLIER)
+        check_return['nb_four'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
     elif nb_almost_aligned == 3:
         if free_side[0] + free_side[1] == 2:  # .A.AA.  .AAA.
-            check_return['nb_free_three'] += multiplier * (H_POSITIVE_MULTIPLIER if game.id_player_act == stone else H_NEGATIVE_MULTIPLIER)
+            check_return['nb_free_three'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
 
 def _check_stone(game, node, x, y, check_return, multiplier=1):
     """
@@ -113,7 +113,7 @@ def _check_stone(game, node, x, y, check_return, multiplier=1):
         return
 
     if node.board.check_vulnerability(x, y):
-        check_return['nb_vulnerable'] += multiplier * (H_POSITIVE_MULTIPLIER if game.id_player_act == stone else H_NEGATIVE_MULTIPLIER)
+        check_return['nb_vulnerable'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
     _check_aligned_dir(game, node, x, y, stone, -1, 0, check_return, multiplier=multiplier)
     _check_aligned_dir(game, node, x, y, stone, 0, 1, check_return, multiplier=multiplier)
     _check_aligned_dir(game, node, x, y, stone, 1, 1, check_return, multiplier=multiplier)
@@ -121,7 +121,7 @@ def _check_stone(game, node, x, y, check_return, multiplier=1):
 
     nb_destroyed = node.board.check_destroyable(x, y, stone)
     if len(nb_destroyed) > 0:
-        check_return['nb_destroyed'] += multiplier * len(nb_destroyed) * (H_POSITIVE_MULTIPLIER if game.id_player_act == stone else H_NEGATIVE_MULTIPLIER)
+        check_return['nb_destroyed'] += multiplier * len(nb_destroyed) * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
 
 
 def get_hash(node):
@@ -187,15 +187,15 @@ def selective_heuristic(node, printDebug=False):
         print()
 
     # apply a value
-    check_return['nb_two'] *= H_SELECT_TWO
-    check_return['nb_free_two'] *= H_SELECT_FREE_TWO
-    check_return['nb_three'] *= H_SELECT_THREE
-    check_return['nb_free_three'] *= H_SELECT_FREE_THREE
-    check_return['nb_free_four'] *= H_SELECT_FREE_FOUR
-    check_return['nb_four'] *= H_SELECT_FOUR
-    check_return['nb_win'] *= H_SELECT_WIN
-    check_return['nb_vulnerable'] *= H_SELECT_VULNERABLILITY
-    check_return['nb_destroyed'] *= H_SELECT_DESTROYED
+    check_return['nb_two'] *= G.H_SELECT_TWO
+    check_return['nb_free_two'] *= G.H_SELECT_FREE_TWO
+    check_return['nb_three'] *= G.H_SELECT_THREE
+    check_return['nb_free_three'] *= G.H_SELECT_FREE_THREE
+    check_return['nb_free_four'] *= G.H_SELECT_FREE_FOUR
+    check_return['nb_four'] *= G.H_SELECT_FOUR
+    check_return['nb_win'] *= G.H_SELECT_WIN
+    check_return['nb_vulnerable'] *= G.H_SELECT_VULNERABLILITY
+    check_return['nb_destroyed'] *= G.H_SELECT_DESTROYED
 
     val = 0
     for k in check_return:

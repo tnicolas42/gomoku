@@ -37,8 +37,8 @@ class Node():
             for x in range(self.board.size):
                 if self.board.content[y][x] is not STONE_EMPTY:
                     # add the squares arround the curent pos to testChilds
-                    for _y in range(y - NB_SQUARE_ARROUND, y + NB_SQUARE_ARROUND + 1):
-                        for _x in range(x - NB_SQUARE_ARROUND, x + NB_SQUARE_ARROUND + 1):
+                    for _y in range(y - G.NB_SQUARE_ARROUND, y + G.NB_SQUARE_ARROUND + 1):
+                        for _x in range(x - G.NB_SQUARE_ARROUND, x + G.NB_SQUARE_ARROUND + 1):
                             if _x >= 0 and _x < self.board.size and _y >= 0 and _y < self.board.size:
                                 testChilds[(_y, _x)] = True
         return testChilds

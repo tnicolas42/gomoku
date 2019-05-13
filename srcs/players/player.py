@@ -47,10 +47,10 @@ class Player(object):
         return True if the player win
         """
         if self.is_win_aligned:
-            print("win with %d or more stones aligned" % (NB_ALIGNED_VICTORY))
+            print("win with %d or more stones aligned" % (G.NB_ALIGNED_VICTORY))
             return True
 
-        if self.destroyed_stones_count >= STONES_DESTROYED_VICTORY:
+        if self.destroyed_stones_count >= G.STONES_DESTROYED_VICTORY:
             print("win because %d stones destroyed" % (self.destroyed_stones_count))
             return True
 

@@ -51,5 +51,6 @@ if __name__ == '__main__':
     game.start()
     gui.run()
     game.quit = True
+    game.join()
 
     print_stats()

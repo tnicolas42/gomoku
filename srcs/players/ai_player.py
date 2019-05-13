@@ -21,8 +21,8 @@ class AIPlayer(Player):
             self.game.board.put_stone(int(self.game.board.size / 2), int(self.game.board.size / 2), self.stone)
         else:
             transpositionTable = {}
-            nodes = Node(self.game, transpositionTable, not self.stone, -1, -1, DEPTH+1, None)
-            move = min_max(nodes, DEPTH, True, float('-inf'), float('inf'))
+            nodes = Node(self.game, transpositionTable, not self.stone, -1, -1, G.DEPTH+1, None)
+            move = min_max(nodes, G.DEPTH, True, float('-inf'), float('inf'))
             # print('heurisitic: %f' % (get_heuristic(move['node'], printDebug=True)))
             # for x in range(self.game.board.size):
             #     for y in range(self.game.board.size):
