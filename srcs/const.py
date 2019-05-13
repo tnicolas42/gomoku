@@ -42,3 +42,8 @@ class G:  # class with all global variables
     H_SELECT_WIN = 1000 // 5  # AAAAA
     H_SELECT_VULNERABLILITY = -35  # BAA.
     H_SELECT_DESTROYED = 90  # ABBA -> A..A
+
+    MINMAX_RANDOM_CHOICE = True  # choose a random position if we have the choice
+
+    DEBUG_ANTICIPATION = False  # print the anticipation
+    DEBUG_SEARCH_ZONE = False  # print the search zone

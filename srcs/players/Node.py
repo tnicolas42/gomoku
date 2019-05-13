@@ -47,9 +47,11 @@ class Node():
     def setChilds(self):
         testChilds = self.get_childs_coord()
 
-        # self.game.board.reset_debug()
+        if G.DEBUG_SEARCH_ZONE:
+            self.game.board.reset_debug()
         for y, x in testChilds:
             if self.board.is_allowed(x, y, not self.stone):
-                # self.game.board.content_desc[y][x]['debug_marker_color'] = 'red'
+                if G.DEBUG_SEARCH_ZONE:
+                    self.game.board.content_desc[y][x]['debug_marker_color'] = 'red'
                 self.childs.append(Node(self.game, self.transpositionTable, not self.stone, x, y, self.depth - 1, self))
 
