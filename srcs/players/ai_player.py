@@ -24,7 +24,7 @@ class AIPlayer(Player):
             nodes = Node(self.game, transpositionTable, not self.stone, -1, -1, G.DEPTH+1, None)
             move = min_max(nodes, G.DEPTH, True, float('-inf'), float('inf'))
             if G.DEBUG_ANTICIPATION:
-                print('heurisitic: %f' % (get_heuristic(move['node'], printDebug=True)))
+                # print('heurisitic: %f' % (get_heuristic(move['node'], printDebug=True)))
                 for x in range(self.game.board.size):
                     for y in range(self.game.board.size):
                         if self.game.board.content[y][x] == STONE_EMPTY:
@@ -51,9 +51,11 @@ def min_max(node, depth, maximize, alpha, beta):
         return {'node': node, 'cost': heuristic(node)}
     if maximize:
         _max = float('-inf')
-        maxlst = []
+        maxlst = None
         for child in node.childs:
             childMin = min_max(child, depth-1, False, alpha, beta)
+            if childMin['cost'] is None:
+                continue
             if childMin['cost'] > _max:
                 _max = childMin['cost']
                 maxlst = [childMin['node']]
@@ -62,6 +64,8 @@ def min_max(node, depth, maximize, alpha, beta):
             alpha = max(alpha, _max)
             if beta <= alpha:
                 break
+        if maxlst is None:
+            return {'node': None, 'cost': None}
         if G.MINMAX_RANDOM_CHOICE:
             _node = random.choice(maxlst)
         else:
@@ -69,9 +73,11 @@ def min_max(node, depth, maximize, alpha, beta):
         return {'node': _node, 'cost': _max}
     else:
         _min = float('inf')
-        minlst = []
+        minlst = None
         for child in node.childs:
             childMax = min_max(child, depth-1, True, alpha, beta)
+            if childMax['cost'] is None:
+                continue
             if childMax['cost'] < _min:
                 _min = childMax['cost']
                 minlst = [childMax['node']]
@@ -80,6 +86,8 @@ def min_max(node, depth, maximize, alpha, beta):
             beta = min(beta, _min)
             if beta <= alpha:
                 break
+        if minlst is None:
+            return {'node': None, 'cost': None}
         if G.MINMAX_RANDOM_CHOICE:
             _node = random.choice(minlst)
         else:

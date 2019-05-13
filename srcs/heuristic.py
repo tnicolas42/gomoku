@@ -113,7 +113,11 @@ def _check_stone(game, node, x, y, check_return, multiplier=1):
         return
 
     if node.board.check_vulnerability(x, y):
-        check_return['nb_vulnerable'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
+        mul = 1
+        if game.players[stone].destroyed_stones_count + 2 >= G.STONES_DESTROYED_VICTORY:
+            mul = G.H_SELECT_DESTROY_VICTORY_ADDER
+            print("vulnerable")
+        check_return['nb_vulnerable'] += mul * (game.players[stone].destroyed_stones_count + 1) * multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
     _check_aligned_dir(game, node, x, y, stone, -1, 0, check_return, multiplier=multiplier)
     _check_aligned_dir(game, node, x, y, stone, 0, 1, check_return, multiplier=multiplier)
     _check_aligned_dir(game, node, x, y, stone, 1, 1, check_return, multiplier=multiplier)
@@ -121,7 +125,11 @@ def _check_stone(game, node, x, y, check_return, multiplier=1):
 
     nb_destroyed = node.board.check_destroyable(x, y, stone)
     if len(nb_destroyed) > 0:
-        check_return['nb_destroyed'] += multiplier * len(nb_destroyed) * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
+        mul = 1
+        if game.players[stone].destroyed_stones_count + len(nb_destroyed) >= G.STONES_DESTROYED_VICTORY:
+            mul = G.H_SELECT_DESTROY_VICTORY_ADDER
+            print("destroyable")
+        check_return['nb_destroyed'] += mul * (game.players[stone].destroyed_stones_count + 1) * multiplier * len(nb_destroyed) * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
 
 
 def get_hash(node):
@@ -145,6 +153,26 @@ def selective_heuristic(node, printDebug=False):
         nb_destroyed=0,
     )
 
+    node_hist = []  # from new to last
+    tmp = node
+    while tmp.parent:
+        node_hist.append((tmp.x, tmp.y, int(tmp.stone)))
+        tmp = tmp.parent
+
+    # for x, y, stone in node_hist:
+    #     node.board.content[y][x] = STONE_EMPTY
+
+    node_hist.reverse()
+    lenhist = len(node_hist)
+    for i, (x, y, stone) in enumerate(node_hist):
+        if node.board.is_allowed(x, y, stone):
+            node.board.put_stone(x, y, stone, test=True)
+            mul = ((lenhist+1)>>1) - (i>>1) + 1
+            _check_stone(game, node, x, y, check_return,
+                        multiplier=mul)
+        else:
+            return None
+
     hash_node = get_hash(node)
     if hash_node in node.transpositionTable:
         check_return = node.transpositionTable[hash_node]
@@ -155,23 +183,6 @@ def selective_heuristic(node, printDebug=False):
 
     if hash_node not in node.transpositionTable:
         node.transpositionTable[hash_node] = check_return
-
-    node_hist = []  # from new to last
-    tmp = node
-    while tmp.parent:
-        node_hist.append((tmp.x, tmp.y, int(tmp.stone)))
-        tmp = tmp.parent
-
-    for x, y, stone in node_hist:
-        node.board.content[y][x] = STONE_EMPTY
-
-
-    node_hist.reverse()
-    lenhist = len(node_hist)
-    for i, (x, y, stone) in enumerate(node_hist):
-        node.board.put_stone(x, y, stone, test=True)
-        _check_stone(game, node, x, y, check_return,
-                     multiplier=((lenhist+1)>>1) - (i>>1))
 
     if printDebug:
         print(node.board)
