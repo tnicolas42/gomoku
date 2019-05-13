@@ -1,9 +1,10 @@
 import time
 import random
-from srcs.heuristic import basic_heuristic
-from srcs.utils.stats import *
+from srcs.heuristic import get_heuristic
 from srcs.players.player import Player
 from srcs.players.Node import Node
+from srcs.utils.stats import *
+from srcs.const import *
 
 class AIPlayer(Player):
     def __init__(self, *args, **kwargs):
@@ -15,17 +16,27 @@ class AIPlayer(Player):
         this function is called when the AI need to move
         -> put a stone on the board
         """
-        depth = 2
         # put the first stone in the middle
         if (self.game.board.remain_places == self.game.board.size * self.game.board.size):
             self.game.board.put_stone(int(self.game.board.size / 2), int(self.game.board.size / 2), self.stone)
         else:
-            nodes = Node(self.game, not self.stone, -1, -1, depth+1, None)
-            move = min_max(nodes, depth, True, float('-inf'), float('inf'))
-            self.game.board.put_stone(move['node'].x, move['node'].y, self.stone)
+            transpositionTable = {}
+            nodes = Node(self.game, transpositionTable, not self.stone, -1, -1, G.DEPTH+1, None)
+            move = min_max(nodes, G.DEPTH, True, float('-inf'), float('inf'))
+            if G.DEBUG_ANTICIPATION:
+                print('heurisitic: %f' % (get_heuristic(move['node'], printDebug=True)))
+                for x in range(self.game.board.size):
+                    for y in range(self.game.board.size):
+                        if self.game.board.content[y][x] == STONE_EMPTY:
+                            if move['node'].board.content[y][x] != STONE_EMPTY:
+                                self.game.board.content_desc[y][x]['debug_marker_color'] = STONES[move['node'].board.content[y][x]]
+            node = move['node']
+            while node.parent.parent:
+                node = node.parent
+            self.game.board.put_stone(node.x, node.y, self.stone)
 
 def heuristic(node):
-    res = basic_heuristic(node)
+    res = get_heuristic(node)
     return res
 
 def is_terminal_node(node):
@@ -45,13 +56,16 @@ def min_max(node, depth, maximize, alpha, beta):
             childMin = min_max(child, depth-1, False, alpha, beta)
             if childMin['cost'] > _max:
                 _max = childMin['cost']
-                maxlst = [child]
+                maxlst = [childMin['node']]
             elif childMin['cost'] == _max:
-                maxlst.append(child)
+                maxlst.append(childMin['node'])
             alpha = max(alpha, _max)
             if beta <= alpha:
                 break
-        _node = random.choice(maxlst)
+        if G.MINMAX_RANDOM_CHOICE:
+            _node = random.choice(maxlst)
+        else:
+            _node = maxlst[0]
         return {'node': _node, 'cost': _max}
     else:
         _min = float('inf')
@@ -60,11 +74,14 @@ def min_max(node, depth, maximize, alpha, beta):
             childMax = min_max(child, depth-1, True, alpha, beta)
             if childMax['cost'] < _min:
                 _min = childMax['cost']
-                minlst = [child]
+                minlst = [childMax['node']]
             elif childMax['cost'] == _min:
-                minlst.append(child)
+                minlst.append(childMax['node'])
             beta = min(beta, _min)
             if beta <= alpha:
                 break
-        _node = random.choice(minlst)
+        if G.MINMAX_RANDOM_CHOICE:
+            _node = random.choice(minlst)
+        else:
+            _node = minlst[0]
         return {'node': _node, 'cost': _min}

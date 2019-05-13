@@ -1,3 +1,4 @@
+import time
 import random
 from srcs.const import *
 
@@ -15,10 +16,17 @@ class Player(object):
 
     is_clicked_on = False
     clicked_pos = [0, 0]
+    time_last_move = 0.0
 
     def __init__(self, game, stone):
         self.game = game
         self.stone = stone
+
+    def moving(self):
+        before = time.time()
+        ret = self.move()
+        self.time_last_move = time.time() - before
+        return ret
 
     def move(self):
         """
@@ -39,10 +47,10 @@ class Player(object):
         return True if the player win
         """
         if self.is_win_aligned:
-            print("win with %d or more stones aligned" % (NB_ALIGNED_VICTORY))
+            print("win with %d or more stones aligned" % (G.NB_ALIGNED_VICTORY))
             return True
 
-        if self.destroyed_stones_count >= STONES_DESTROYED_VICTORY:
+        if self.destroyed_stones_count >= G.STONES_DESTROYED_VICTORY:
             print("win because %d stones destroyed" % (self.destroyed_stones_count))
             return True
 

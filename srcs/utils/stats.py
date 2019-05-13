@@ -29,6 +29,8 @@ def get_stats(function):
         module=function.__module__,
         nb_call=0,
         total_time=0,
+        max_time = float('-inf'),
+        min_time = float('inf'),
     )
 
     def decorator(*args, **kwargs):
@@ -37,7 +39,10 @@ def get_stats(function):
         EnableStats.stats[function.__name__]['nb_call'] += 1
         time_start = time.time()
         ret = function(*args, **kwargs)
-        EnableStats.stats[function.__name__]['total_time'] += time.time() - time_start
+        exec_time = time.time() - time_start
+        EnableStats.stats[function.__name__]['total_time'] += exec_time
+        EnableStats.stats[function.__name__]['max_time'] = max(EnableStats.stats[function.__name__]['max_time'], exec_time)
+        EnableStats.stats[function.__name__]['min_time'] = min(EnableStats.stats[function.__name__]['min_time'], exec_time)
         return ret
     return decorator
 
@@ -58,6 +63,8 @@ def get_and_print_stats(compact=True, pr_nb_called=True, pr_total_exec_time=True
             module=function.__module__,
             nb_call=0,
             total_time=0,
+            max_time = float('-inf'),
+            min_time = float('inf'),
         )
 
         def decorator(*args, **kwargs):
@@ -66,7 +73,10 @@ def get_and_print_stats(compact=True, pr_nb_called=True, pr_total_exec_time=True
             EnableStats.stats[function.__name__]['nb_call'] += 1
             time_start = time.time()
             ret = function(*args, **kwargs)
-            EnableStats.stats[function.__name__]['total_time'] += time.time() - time_start
+            exec_time = time.time() - time_start
+            EnableStats.stats[function.__name__]['total_time'] += exec_time
+            EnableStats.stats[function.__name__]['max_time'] = max(EnableStats.stats[function.__name__]['max_time'], exec_time)
+            EnableStats.stats[function.__name__]['min_time'] = min(EnableStats.stats[function.__name__]['min_time'], exec_time)
             if EnableStats.stats[function.__name__]['nb_call'] % pr_frequency == 0 or \
                EnableStats.stats[function.__name__]['nb_call'] == 1:
                 print_stats_one_function(function.__name__,
@@ -107,7 +117,7 @@ def print_stats_one_function(name, compact=False, pr_nb_called=True, pr_total_ex
             if pr_total_exec_time:
                 print('\ttotal exec time %fs' % (val['total_time']))
             if pr_mean_time:
-                print('\tmean time %fs' % (val['total_time'] / val['nb_call']))
+                print('\tmean time %fs (min: %fs, max: %fs)' % (val['total_time'] / val['nb_call'], val['min_time'], val['max_time']))
 
 
 def print_stats(compact=False, pr_nb_called=True, pr_total_exec_time=True, pr_mean_time=True):
