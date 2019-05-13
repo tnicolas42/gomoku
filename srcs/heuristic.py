@@ -122,12 +122,6 @@ def _check_stone(game, node, x, y, check_return, multiplier=1):
     _check_aligned_dir(game, node, x, y, stone, 1, 1, check_return, multiplier=multiplier)
     _check_aligned_dir(game, node, x, y, stone, 1, -1, check_return, multiplier=multiplier)
 
-    # nb_destroyed = node.board.check_destroyable(x, y, stone)
-    # if len(nb_destroyed) > 0:
-    #     mul = 1
-    #     if game.players[stone].destroyed_stones_count + len(nb_destroyed) >= G.STONES_DESTROYED_VICTORY:
-    #         mul = G.H_SELECT_DESTROY_VICTORY_ADDER
-    #     check_return['nb_destroyed'] += mul * (game.players[stone].destroyed_stones_count + 1) * multiplier * len(nb_destroyed) * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
 
 def get_hash(node):
     return hash(str(node.board.content))
@@ -155,9 +149,6 @@ def selective_heuristic(node, printDebug=False):
     while tmp.parent:
         node_hist.append((tmp.x, tmp.y, int(tmp.stone)))
         tmp = tmp.parent
-
-    # for x, y, stone in node_hist:
-    #     node.board.content[y][x] = STONE_EMPTY
 
     node_hist.reverse()
     lenhist = len(node_hist)
@@ -218,7 +209,6 @@ def selective_heuristic(node, printDebug=False):
 
 @get_stats
 def get_heuristic(node, printDebug=False):
-    # val = basic_heuristic(node, printDebug=printDebug)
     val = selective_heuristic(node, printDebug=printDebug)
 
     return val

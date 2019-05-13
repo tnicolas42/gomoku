@@ -24,7 +24,6 @@ class AIPlayer(Player):
             nodes = Node(self.game, transpositionTable, not self.stone, -1, -1, G.DEPTH+1, None)
             move = min_max(nodes, G.DEPTH, True, float('-inf'), float('inf'))
             if G.DEBUG_ANTICIPATION:
-                # print('heurisitic: %f' % (get_heuristic(move['node'], printDebug=True)))
                 for x in range(self.game.board.size):
                     for y in range(self.game.board.size):
                         if self.game.board.content[y][x] == STONE_EMPTY:

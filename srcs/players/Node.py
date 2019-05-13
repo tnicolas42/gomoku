@@ -25,8 +25,6 @@ class Node():
         else:
             parent_content = self.game.board.content
         self.board = SoftBoard(self.game, self.game.board.size, parent_content)
-        # if self.x != -1 and self.y != -1:
-        #     self.board.put_stone(self.x, self.y, self.stone, test=True)
 
         self.childs = []
 
@@ -57,7 +55,6 @@ class Node():
         if G.DEBUG_SEARCH_ZONE:
             self.game.board.reset_debug()
         for y, x in testChilds:
-            # if self.board.is_allowed(x, y, not self.stone):
             if G.DEBUG_SEARCH_ZONE:
                 self.game.board.content_desc[y][x]['debug_marker_color'] = 'red'
             self.childs.append(Node(self.game, self.transpositionTable, not self.stone, x, y, self.depth - 1, self))
