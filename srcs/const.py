@@ -29,4 +29,4 @@ DEPTH = 3
 
 # used to count more the positive or negative action in heuristic
 H_POSITIVE_MULTIPLIER = 1  # positive number
-H_NEGATIVE_MULTIPLIER = -1.5  # negative number
+H_NEGATIVE_MULTIPLIER = -2  # negative number

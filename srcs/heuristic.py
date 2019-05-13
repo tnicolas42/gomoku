@@ -131,7 +131,7 @@ H_BASIC_FREE_FOUR = 300  # .AAAA.
 H_BASIC_FOUR = 100  # BAAAA. AA.AA
 H_BASIC_WIN = 1000  # AAAAA
 H_BASIC_VULNERABLILITY = -10  # BAA.
-H_BASIC_DESTROYED = 100  # ABBA -> A..A
+H_BASIC_DESTROYED = 150  # ABBA -> A..A
 
 
 def get_hash(node):
@@ -229,17 +229,14 @@ def selective_heuristic(node, printDebug=False):
 
     hash_node = get_hash(node)
     if hash_node in node.transpositionTable:
-        base_table = node.transpositionTable[hash_node]
-
-    for x in range(game.board.size):
-        for y in range(game.board.size):
-            _check_stone(game, node, x, y, check_return)
+        check_return = node.transpositionTable[hash_node]
+    else:
+        for x in range(game.board.size):
+            for y in range(game.board.size):
+                _check_stone(game, node, x, y, check_return)
 
     if hash_node not in node.transpositionTable:
-        val = 0
-        for k in check_return:
-            val += check_return[k]
-        node.transpositionTable[hash_node] = val
+        node.transpositionTable[hash_node] = check_return
 
     node_hist = []  # from new to last
     tmp = node
