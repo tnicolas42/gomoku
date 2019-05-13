@@ -28,7 +28,7 @@ class SoftBoard(object):
     content_desc = None  # content description -> vulnerability, win, ...
     size = None
     remain_places = None  # number of remaining places
-    is_vulnerable_victory = False  # if victory but vulnerable -> wait one turn before win
+    is_vulnerable_victory = None  # if victory but vulnerable -> wait one turn before win
     nb_total_stones = 0  # total number of stone on board
 
     def __init__(self, game, size=19, content=[]):
@@ -159,7 +159,7 @@ class SoftBoard(object):
                 while 0 <= new_x < self.size and 0 <= new_y < self.size:
                     if self.content[new_y][new_x] == stone:
                         if not self.softMode and \
-                           (self.is_vulnerable_victory or nb_aligned_non_vulnerable >= NB_ALIGNED_VICTORY):
+                           (self.is_vulnerable_victory[stone] or nb_aligned_non_vulnerable >= NB_ALIGNED_VICTORY):
                             self.content_desc[new_y][new_x]['win'] = True
                     else:
                         break
@@ -170,7 +170,7 @@ class SoftBoard(object):
                 while 0 <= new_x < self.size and 0 <= new_y < self.size:
                     if self.content[new_y][new_x] == stone:
                         if not self.softMode and \
-                           (self.is_vulnerable_victory or nb_aligned_non_vulnerable >= NB_ALIGNED_VICTORY):
+                           (self.is_vulnerable_victory[stone] or nb_aligned_non_vulnerable >= NB_ALIGNED_VICTORY):
                             self.content_desc[new_y][new_x]['win'] = True
                     else:
                         break
@@ -212,7 +212,7 @@ class SoftBoard(object):
 
         if total_is_aligned:
             if not check_only:
-                if self.is_vulnerable_victory or total_is_not_vulnerable:
+                if self.is_vulnerable_victory[stone] or total_is_not_vulnerable:
                     self.game.players[stone].is_win_aligned = True
                 if not total_is_not_vulnerable:  # if vulnerable
                     return True
@@ -221,6 +221,9 @@ class SoftBoard(object):
         return False
 
     def check_winner(self):
+        if self.is_vulnerable_victory == None:
+            self.is_vulnerable_victory = [False for i in range(len(self.game.players))]
+
         self.nb_total_stones = 0
         for pl in self.game.players:
             pl.nb_stone = 0
@@ -231,10 +234,10 @@ class SoftBoard(object):
                     self.game.players[self.content[y][x]].nb_stone += 1
                 self.check_vulnerability(x, y)
 
-        tmp_is_vulnerable_victory = False
+        tmp_is_vulnerable_victory = [False for i in range(len(self.game.players))]
         for x in range(self.size):
             for y in range(self.size):
-                tmp_is_vulnerable_victory = tmp_is_vulnerable_victory or self.check_aligned(x, y)
+                tmp_is_vulnerable_victory[self.content[y][x]] = tmp_is_vulnerable_victory[self.content[y][x]] or self.check_aligned(x, y)
         self.is_vulnerable_victory = tmp_is_vulnerable_victory
 
     def put_stone(self, x, y, stone, test=False):

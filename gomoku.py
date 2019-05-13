@@ -24,7 +24,7 @@ if __name__ == '__main__':
     parser.add_argument('--players', type=str, choices=player_types.keys(), nargs='+', required=False, default=["REAL", "AI"],
                             help="this is the players list (--players AI REAL ...) -> max %d players" % (len(STONES)))
 
-    parser.add_argument('--board-size', type=int, default=19,
+    parser.add_argument('--board-size', type=int, default=19, choices=range(1,101), metavar="[1-100]",
                             help="this is the size of the board")
 
     parser.add_argument("--w-size-percent", type=int, default=80, choices=range(30,101), metavar="[30-100]",
