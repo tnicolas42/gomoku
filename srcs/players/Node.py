@@ -31,7 +31,7 @@ class Node():
         self.childs = []
 
     @get_stats
-    def setChilds(self):
+    def get_childs_coord(self):
         testChilds = dict()
         for y in range(self.board.size):
             for x in range(self.board.size):
@@ -41,6 +41,11 @@ class Node():
                         for _x in range(x - NB_SQUARE_ARROUND, x + NB_SQUARE_ARROUND + 1):
                             if _x >= 0 and _x < self.board.size and _y >= 0 and _y < self.board.size:
                                 testChilds[(_y, _x)] = True
+        return testChilds
+
+    @get_stats
+    def setChilds(self):
+        testChilds = self.get_childs_coord()
 
         # self.game.board.reset_debug()
         for y, x in testChilds:
