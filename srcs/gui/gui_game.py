@@ -137,7 +137,7 @@ class GuiGame(BaseGui):
                     elif self.last_pos == [x, y]:
                         create_args['outline'] = 'blue'
                         create_args['width'] = self.w_board_sz // 200
-                    elif G.SHOW_VULNERABILITY and self.game.board.content_desc[y][x]['vulnerability']:
+                    elif G.SHOW_VULNERABILITY and self.game.board.vulnerability[y][x]:
                         create_args['outline'] = 'red'
                         create_args['width'] = self.w_board_sz // 200
                     self.board_canvas.create_circle(int(x_win), int(y_win), int(line_space * 0.4), **create_args)
