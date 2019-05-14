@@ -13,7 +13,7 @@ class RealPlayer(Player):
         """
         self.is_clicked_on = False
         is_moving = False
-        while not is_moving and not self.game.quit:
+        while not is_moving and not self.game.quit and not self.game.reset_game:
             time.sleep(0.05)
             if self.is_clicked_on:
                 self.game.gui.gui_game.error_pos[0] = [None, None]  # reset the error stone

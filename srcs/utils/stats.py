@@ -129,13 +129,13 @@ def set_marker(name="default_marker", beforetxt="", aftertxt="\n"):
         def decorator(*args, **kwargs):
             if not EnableStats.enable:
                 return function(*args, **kwargs)
-            print(beforetxt)
+            print(end=beforetxt)
             ret = function(*args, **kwargs)
             for func_name in EnableStats.markers[name]:
                 if EnableStats.stats[func_name]['marker'][name]['print_']:
                     print_stats_marker_one_function(name=func_name, marker_name=name, compact=True)
                 _set_marker_def_val(func_name=func_name, marker_name=name)
-            print(aftertxt)
+            print(end=aftertxt)
             return ret
         return decorator
     return marker

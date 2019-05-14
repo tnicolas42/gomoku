@@ -30,7 +30,7 @@ class Gui(object):
     gui_menu = None
     gui_act = None  # pointer on the actual gui
 
-    def __init__(self, game, title='gomoku', w_size_percent=80, left_band_w_percent=40, rate=10):
+    def __init__(self, game, title='gomoku', skip_menu=False, w_size_percent=80, left_band_w_percent=40, rate=10):
         self.game = game
 
         self.clock = Clock(rate=rate)
@@ -51,7 +51,10 @@ class Gui(object):
         # key binding
         self.win.bind('<Key>', self.keyPress)
 
-        self.openMenu()
+        if skip_menu:
+            self.openGame()
+        else:
+            self.openMenu()
 
         # center the win
         self.centerWindows()
@@ -95,8 +98,9 @@ class Gui(object):
             self.clock.tick()  # wait until next loop
 
     def on_closing_window(self):
-        if messagebox.askokcancel("do you want to quit ?"):
+        if not G.ASK_VALIDATION or messagebox.askokcancel("do you want to quit ?"):
             self.game.quit = True
+            self.game.reset_game = True
 
     def keyPress(self, e):
         if e.keysym == "Escape":
