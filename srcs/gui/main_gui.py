@@ -53,6 +53,8 @@ class Gui(object):
 
         self.openMenu()
 
+        # center the win
+        self.centerWindows()
         # focus the win
         if platform() == 'Darwin':  # How Mac OS X is identified by Python
             os.system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
@@ -109,3 +111,15 @@ class Gui(object):
 
     def redraw(self):
         self.gui_act.redraw()
+
+
+    def centerWindows(self):
+        """
+        "center" the windows in the middle of the screen
+        """
+        # Gets both half the screen width/height and window width/height
+        positionRight = int(self.win.winfo_screenwidth()/2 - self.w_width/2)
+        positionDown = int(self.win.winfo_screenheight()/2 - self.w_height/2)
+
+        # Positions the window in the center of the page.
+        self.win.geometry("+{}+{}".format(positionRight, positionDown))
