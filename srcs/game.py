@@ -53,6 +53,8 @@ class Game(threading.Thread):
                     return False
                 self.id_player_act = id_
                 player_act.moving()
+                if self.quit:
+                    return False
 
                 # check for a winner in the game
                 for id2_, player_act2 in enumerate(self.players):

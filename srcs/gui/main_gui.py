@@ -1,6 +1,7 @@
 import os
 import time
 import tkinter as tk
+from tkinter import messagebox
 from platform import system as platform
 from srcs.gui.gui_game import GuiGame
 from srcs.gui.gui_menu import GuiMenu
@@ -23,7 +24,6 @@ class Gui(object):
     w_height = None  # width of left band
     w_size_percent = None
     left_band_w_percent = None
-    quit = False
     clock = None  # this is a clock object to control time
 
     gui_game = None
@@ -88,14 +88,15 @@ class Gui(object):
         main gui function:
         this function update the gui at a given rate
         """
-        while not self.quit:
+        while not self.game.quit:
             if self.gui_act is not None:
                 self.update()
                 self.redraw()
             self.clock.tick()  # wait until next loop
 
     def on_closing_window(self):
-        self.quit = True
+        if messagebox.askokcancel("do you want to quit ?"):
+            self.game.quit = True
 
     def keyPress(self, e):
         if e.keysym == "Escape":

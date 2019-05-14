@@ -24,6 +24,8 @@ class AIPlayer(Player):
             transpositionTable = {}
             nodes = Node(self.game, transpositionTable, not self.stone, -1, -1, G.DEPTH+1, None)
             move = min_max(nodes, G.DEPTH, True, float('-inf'), float('inf'))
+            if move is None:
+                return None
             if G.DEBUG_ANTICIPATION:
                 for x in range(G.BOARD_SZ):
                     for y in range(G.BOARD_SZ):
@@ -47,6 +49,8 @@ def min_max(node, depth, maximize, alpha, beta):
     """
     min_max algorithm implementation
     """
+    if node.game.quit:
+        return None
     if depth == 0 or is_terminal_node(node):
         return {'node': node, 'cost': heuristic(node)}
     if maximize:
