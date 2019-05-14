@@ -21,8 +21,9 @@ class AIPlayer(Player):
             self.game.board.put_stone(int(G.BOARD_SZ / 2), int(G.BOARD_SZ / 2), self.stone)
         else:
             transpositionTable = {}
-            nodes = Node(self.game, transpositionTable, not self.stone, -1, -1, G.DEPTH+1, None)
-            move = min_max(nodes, G.DEPTH, True, float('-inf'), float('inf'))
+            depth = min(G.DEPTH, self.game.board.remain_places)
+            nodes = Node(self.game, transpositionTable, not self.stone, -1, -1, depth+1, None)
+            move = min_max(nodes, depth, True, float('-inf'), float('inf'))
             if G.DEBUG_ANTICIPATION:
                 for x in range(G.BOARD_SZ):
                     for y in range(G.BOARD_SZ):
