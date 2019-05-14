@@ -54,4 +54,4 @@ class G:  # class with all global variables
 
     DEBUG_ANTICIPATION = False  # print the anticipation
     DEBUG_SEARCH_ZONE = False  # print the search zone
-    SHOW_VULNERABILITY = False
+    SHOW_VULNERABILITY = False  # show the vulnerables stones

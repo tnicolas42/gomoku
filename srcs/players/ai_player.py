@@ -10,6 +10,7 @@ class AIPlayer(Player):
     def __init__(self, *args, **kwargs):
         Player.__init__(self, *args, **kwargs)
 
+    @set_marker()
     @get_and_print_stats()
     def move(self):
         """

@@ -48,7 +48,7 @@ class Node():
             tmp = tmp.parent
         return testChilds
 
-    @get_stats
+    @get_stats_and_mark()
     def setChilds(self):
         testChilds = self.get_childs_coord()
 
