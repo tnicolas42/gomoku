@@ -17,6 +17,9 @@ STONES = (
 
 BG_COLOR = "#F6AA49"
 
+STONE = 0
+VULNERABILITY = 1
+
 class G:  # class with all global variables
     BOARD_SZ = 19
     PLAYERS = ["REAL", "AI"]
@@ -50,7 +53,7 @@ class G:  # class with all global variables
 
     H_SELECT_DESTROY_VICTORY_ADDER = 10  # if this is the last destroyed stone, mul this stone by H_SELECT_DESTROY_VICTORY_ADDER
 
-    MINMAX_RANDOM_CHOICE = True  # choose a random position if we have the choice
+    MINMAX_RANDOM_CHOICE = False  # choose a random position if we have the choice
 
     DEBUG_ANTICIPATION = False  # print the anticipation
     DEBUG_SEARCH_ZONE = False  # print the search zone

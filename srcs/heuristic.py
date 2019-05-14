@@ -15,29 +15,29 @@ def _check_aligned_dir(game, node, x, y, stone, addx, addy, check_return, multip
     while 1:
         # if out of bound
         if not (0 <= new_x < G.BOARD_SZ and 0 <= new_y < G.BOARD_SZ):
-            if node.board.content[new_y - addy][new_x - addx] == STONE_EMPTY:
+            if node.board.content[new_y - addy][new_x - addx][STONE] == STONE_EMPTY:
                 free_side[0] = True
             break
         # if player stone
-        elif node.board.content[new_y][new_x] == stone:
+        elif node.board.content[new_y][new_x][STONE] == stone:
             nb_almost_aligned += 1
             if nb_hole[0] == 0:
                 nb_aligned += 1
         # if empty
-        elif node.board.content[new_y][new_x] == STONE_EMPTY:
-            if node.board.content[new_y - addy][new_x - addx] == stone:
+        elif node.board.content[new_y][new_x][STONE] == STONE_EMPTY:
+            if node.board.content[new_y - addy][new_x - addx][STONE] == stone:
                 if nb_hole[0] == 0:
                     nb_hole[0] = 1
                 else:
                     free_side[0] = True
                     break
-            elif node.board.content[new_y - addy][new_x - addx] == STONE_EMPTY:
+            elif node.board.content[new_y - addy][new_x - addx][STONE] == STONE_EMPTY:
                 nb_hole[0] = 0
                 free_side[0] = True
                 break
         # if other stone
         else:
-            if node.board.content[new_y - addy][new_x - addx] == STONE_EMPTY:
+            if node.board.content[new_y - addy][new_x - addx][STONE] == STONE_EMPTY:
                 nb_hole[0] = 0
                 free_side[0] = True
             break
@@ -48,29 +48,29 @@ def _check_aligned_dir(game, node, x, y, stone, addx, addy, check_return, multip
     while 1:
         # if out of bound
         if not (0 <= new_x < G.BOARD_SZ and 0 <= new_y < G.BOARD_SZ):
-            if node.board.content[new_y + addy][new_x + addx] == STONE_EMPTY:
+            if node.board.content[new_y + addy][new_x + addx][STONE] == STONE_EMPTY:
                 free_side[0] = True
             break
         # if player stone
-        elif node.board.content[new_y][new_x] == stone:
+        elif node.board.content[new_y][new_x][STONE] == stone:
             nb_almost_aligned += 1
             if nb_hole[1] == 0:
                 nb_aligned += 1
         # if empty
-        elif node.board.content[new_y][new_x] == STONE_EMPTY:
-            if node.board.content[new_y + addy][new_x + addx] == stone:
+        elif node.board.content[new_y][new_x][STONE] == STONE_EMPTY:
+            if node.board.content[new_y + addy][new_x + addx][STONE] == stone:
                 if nb_hole[1] == 0:
                     nb_hole[1] = 1
                 else:
                     free_side[1] = True
                     break
-            elif node.board.content[new_y + addy][new_x + addx] == STONE_EMPTY:
+            elif node.board.content[new_y + addy][new_x + addx][STONE] == STONE_EMPTY:
                 nb_hole[1] = 0
                 free_side[1] = True
                 break
         # if other stone
         else:
-            if node.board.content[new_y + addy][new_x + addx] == STONE_EMPTY:
+            if node.board.content[new_y + addy][new_x + addx][STONE] == STONE_EMPTY:
                 nb_hole[1] = 0
                 free_side[1] = True
             break
@@ -108,7 +108,7 @@ def _check_stone(game, node, x, y, check_return, multiplier=1):
         the nb of win
         the number of vulnerability
     """
-    stone = node.board.content[y][x]
+    stone = node.board.content[y][x][STONE]
     if stone == STONE_EMPTY:
         return
 

@@ -33,17 +33,17 @@ class Node():
         testChilds = dict()
         for y in range(G.BOARD_SZ):
             for x in range(G.BOARD_SZ):
-                if self.board.content[y][x] is not STONE_EMPTY:
+                if self.board.content[y][x][STONE] is not STONE_EMPTY:
                     # add the squares arround the curent pos to testChilds
                     for _y in range(y - G.NB_SQUARE_ARROUND, y + G.NB_SQUARE_ARROUND + 1):
                         for _x in range(x - G.NB_SQUARE_ARROUND, x + G.NB_SQUARE_ARROUND + 1):
-                            if 0 <= _x < G.BOARD_SZ and 0 <= _y < G.BOARD_SZ and self.board.content[_y][_x] == STONE_EMPTY:
+                            if 0 <= _x < G.BOARD_SZ and 0 <= _y < G.BOARD_SZ and self.board.content[_y][_x][STONE] == STONE_EMPTY:
                                 testChilds[(_y, _x)] = True
         tmp = self
         while tmp.parent:
             for _y in range(tmp.y - G.NB_SQUARE_ARROUND, tmp.y + G.NB_SQUARE_ARROUND + 1):
                 for _x in range(tmp.x - G.NB_SQUARE_ARROUND, tmp.x + G.NB_SQUARE_ARROUND + 1):
-                    if 0 <= _x < G.BOARD_SZ and 0 <= _y < G.BOARD_SZ and self.board.content[_y][_x] == STONE_EMPTY:
+                    if 0 <= _x < G.BOARD_SZ and 0 <= _y < G.BOARD_SZ and self.board.content[_y][_x][STONE] == STONE_EMPTY:
                         testChilds[(_y, _x)] = True
             tmp = tmp.parent
         return testChilds

@@ -27,9 +27,9 @@ class AIPlayer(Player):
             if G.DEBUG_ANTICIPATION:
                 for x in range(G.BOARD_SZ):
                     for y in range(G.BOARD_SZ):
-                        if self.game.board.content[y][x] == STONE_EMPTY:
-                            if move['node'].board.content[y][x] != STONE_EMPTY:
-                                self.game.board.content_desc[y][x]['debug_marker_color'] = STONES[move['node'].board.content[y][x]]
+                        if self.game.board.content[y][x][STONE] == STONE_EMPTY:
+                            if move['node'].board.content[y][x][STONE] != STONE_EMPTY:
+                                self.game.board.content_desc[y][x]['debug_marker_color'] = STONES[move['node'].board.content[y][x][STONE]]
             node = move['node']
             while node.parent.parent:
                 node = node.parent

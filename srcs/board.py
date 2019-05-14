@@ -32,14 +32,12 @@ class SoftBoard(object):
 
     def __init__(self, game, content=[]):
         self.game = game
+
+        # player id or STONE_EMPTY, True if vulnerable (BAA.)
         self.content = [
             [
-                STONE_EMPTY if content == [] else content[j][i]  # player id or STONE_EMPTY
+                [STONE_EMPTY if content == [] else content[j][i][STONE], False]
             for i in range(G.BOARD_SZ)] for j in range(G.BOARD_SZ)
-        ]
-        # True if vulnerable (BAA.)
-        self.vulnerability = [
-            [False for i in range(G.BOARD_SZ)] for j in range(G.BOARD_SZ)
         ]
         self.remain_places = G.BOARD_SZ * G.BOARD_SZ
 
@@ -47,17 +45,17 @@ class SoftBoard(object):
         """
         check the vulnerability of one stone
         """
-        stone = self.content[y][x]
+        stone = self.content[y][x][STONE]
         if stone == STONE_EMPTY:
             return False
         # for 4 stones: abcd with b is x y -> a=x1y1 b=xy c=x2y2 d=x3y3
         vul_cond = lambda x1, y1, x2, y2, x3, y3: (
                         0 <= x1 < G.BOARD_SZ and 0 <= x2 < G.BOARD_SZ and 0 <= x3 < G.BOARD_SZ and
                         0 <= y1 < G.BOARD_SZ and 0 <= y2 < G.BOARD_SZ and 0 <= y3 < G.BOARD_SZ and
-                        self.content[y][x] == self.content[y2][x2] and
-                        self.content[y1][x1] != stone and self.content[y3][x3] != stone and
-                        self.content[y1][x1] != self.content[y3][x3] and
-                        (self.content[y1][x1] == STONE_EMPTY or self.content[y3][x3] == STONE_EMPTY))
+                        self.content[y][x][STONE] == self.content[y2][x2][STONE] and
+                        self.content[y1][x1][STONE] != stone and self.content[y3][x3][STONE] != stone and
+                        self.content[y1][x1][STONE] != self.content[y3][x3][STONE] and
+                        (self.content[y1][x1][STONE] == STONE_EMPTY or self.content[y3][x3][STONE] == STONE_EMPTY))
         vul_tab = (
             (x-1, y, x+1, y, x+2, y),
             (x+1, y, x-1, y, x-2, y),
@@ -70,9 +68,9 @@ class SoftBoard(object):
         )
         for vul_tab_i in vul_tab:
             if vul_cond(*vul_tab_i):
-                self.vulnerability[y][x] = True
+                self.content[y][x][VULNERABILITY] = True
                 return True
-        self.vulnerability[y][x] = False
+        self.content[y][x][VULNERABILITY] = False
         return False
 
     def check_destroyable(self, x, y, stone):
@@ -87,9 +85,9 @@ class SoftBoard(object):
         destroy_cond = lambda x1, y1, x2, y2, x3, y3: (
                         0 <= x1 < G.BOARD_SZ and 0 <= x2 < G.BOARD_SZ and 0 <= x3 < G.BOARD_SZ and
                         0 <= y1 < G.BOARD_SZ and 0 <= y2 < G.BOARD_SZ and 0 <= y3 < G.BOARD_SZ and
-                        self.content[y3][x3] == stone and
-                        self.content[y2][x2] == self.content[y1][x1] and
-                        self.content[y1][x1] not in (STONE_EMPTY, stone))
+                        self.content[y3][x3][STONE] == stone and
+                        self.content[y2][x2][STONE] == self.content[y1][x1][STONE] and
+                        self.content[y1][x1][STONE] not in (STONE_EMPTY, stone))
         # this tab contains all configuration to destroy stones
         destroy_tab = (
             (x, y-1, x, y-2, x, y-3),
@@ -118,14 +116,14 @@ class SoftBoard(object):
         """
         nb_aligned = 1
         is_aligned_vulnerable = [False, False]
-        if self.vulnerability[y][x]:
+        if self.content[y][x][VULNERABILITY]:
             is_aligned_vulnerable = [True, True]
         nb_aligned_non_vulnerable = 1
         new_x = x + addx
         new_y = y + addy
         while 0 <= new_x < G.BOARD_SZ and 0 <= new_y < G.BOARD_SZ:
-            if self.content[new_y][new_x] == stone:
-                if self.vulnerability[new_y][new_x]:
+            if self.content[new_y][new_x][STONE] == stone:
+                if self.content[new_y][new_x][VULNERABILITY]:
                     is_aligned_vulnerable[0] = True
                 if not is_aligned_vulnerable[0]:
                     nb_aligned_non_vulnerable += 1
@@ -137,8 +135,8 @@ class SoftBoard(object):
         new_x = x - addx
         new_y = y - addy
         while 0 <= new_x < G.BOARD_SZ and 0 <= new_y < G.BOARD_SZ:
-            if self.content[new_y][new_x] == stone:
-                if self.vulnerability[new_y][new_x]:
+            if self.content[new_y][new_x][STONE] == stone:
+                if self.content[new_y][new_x][VULNERABILITY]:
                     is_aligned_vulnerable[1] = True
                 if not is_aligned_vulnerable[1]:
                     nb_aligned_non_vulnerable += 1
@@ -152,7 +150,7 @@ class SoftBoard(object):
                 new_x = x
                 new_y = y
                 while 0 <= new_x < G.BOARD_SZ and 0 <= new_y < G.BOARD_SZ:
-                    if self.content[new_y][new_x] == stone:
+                    if self.content[new_y][new_x][STONE] == stone:
                         if not self.softMode and \
                            (self.is_vulnerable_victory[stone] or nb_aligned_non_vulnerable >= G.NB_ALIGNED_VICTORY):
                             self.content_desc[new_y][new_x]['win'] = True
@@ -163,7 +161,7 @@ class SoftBoard(object):
                 new_x = x - addx
                 new_y = y - addy
                 while 0 <= new_x < G.BOARD_SZ and 0 <= new_y < G.BOARD_SZ:
-                    if self.content[new_y][new_x] == stone:
+                    if self.content[new_y][new_x][STONE] == stone:
                         if not self.softMode and \
                            (self.is_vulnerable_victory[stone] or nb_aligned_non_vulnerable >= G.NB_ALIGNED_VICTORY):
                             self.content_desc[new_y][new_x]['win'] = True
@@ -186,7 +184,7 @@ class SoftBoard(object):
 
         return the new state of is_vulnerable_victory
         """
-        stone = self.content[y][x]
+        stone = self.content[y][x][STONE]
         if stone == STONE_EMPTY:
             return False
         total_is_aligned = False
@@ -224,15 +222,15 @@ class SoftBoard(object):
             pl.nb_stone = 0
         for x in range(G.BOARD_SZ):
             for y in range(G.BOARD_SZ):
-                if self.content[y][x] is not STONE_EMPTY:
+                if self.content[y][x][STONE] is not STONE_EMPTY:
                     self.nb_total_stones += 1
-                    self.game.players[self.content[y][x]].nb_stone += 1
+                    self.game.players[self.content[y][x][STONE]].nb_stone += 1
                 self.check_vulnerability(x, y)
 
         tmp_is_vulnerable_victory = [False for i in range(len(self.game.players))]
         for x in range(G.BOARD_SZ):
             for y in range(G.BOARD_SZ):
-                tmp_is_vulnerable_victory[self.content[y][x]] = tmp_is_vulnerable_victory[self.content[y][x]] or self.check_aligned(x, y)
+                tmp_is_vulnerable_victory[self.content[y][x][STONE]] = tmp_is_vulnerable_victory[self.content[y][x][STONE]] or self.check_aligned(x, y)
         self.is_vulnerable_victory = tmp_is_vulnerable_victory
 
     def put_stone(self, x, y, stone, test=False):
@@ -253,12 +251,12 @@ class SoftBoard(object):
         if not test:
             self.game.gui.gui_game.last_pos = [x, y]  # save the pos of the last placed stone
             self.remain_places -= 1
-        self.content[y][x] = stone
+        self.content[y][x][STONE] = stone
 
         # destroy some stones if needed
         destroyed = self.check_destroyable(x, y, stone)
         for dest_x, dest_y in destroyed:
-            self.content[dest_y][dest_x] = STONE_EMPTY
+            self.content[dest_y][dest_x][STONE] = STONE_EMPTY
             self.remain_places += 1
             if not test:
                 self.game.players[stone].destroyed_stones_count += 1
@@ -299,7 +297,7 @@ class SoftBoard(object):
         new_y = y - (addy * (len_free_three >> 1))
         while i < len_free_three:
             if 0 <= new_x < G.BOARD_SZ and 0 <= new_y < G.BOARD_SZ:
-                lst[i] = self.content[new_y][new_x]
+                lst[i] = self.content[new_y][new_x][STONE]
             new_x += addx
             new_y += addy
             i += 1
@@ -328,7 +326,7 @@ class SoftBoard(object):
         if it's ok -> return True
         else -> return False
         """
-        if self.content[y][x] is not STONE_EMPTY:
+        if self.content[y][x][STONE] is not STONE_EMPTY:
             return False
 
         # check double three
@@ -341,9 +339,9 @@ class SoftBoard(object):
                         self._is_free_three_dir(x, y, stone, 1, 1) + \
                         self._is_free_three_dir(x, y, stone, -1, 1)
         if nb_free_three >= 2:
-            self.content[y][x] = stone
+            self.content[y][x][STONE] = stone
             check_aligned = self.check_aligned(x, y, True)  # if the move win
-            self.content[y][x] = STONE_EMPTY
+            self.content[y][x][STONE] = STONE_EMPTY
             if check_aligned:
                 return True
             else:
@@ -366,26 +364,26 @@ class SoftBoard(object):
             for x in range(G.BOARD_SZ):
                 color = [c.EOC, c.EOC]
                 txt = ' . '
-                if self.content[y][x] == STONE_EMPTY:
+                if self.content[y][x][STONE] == STONE_EMPTY:
                     pass
-                elif self.content[y][x] == 0:
+                elif self.content[y][x][STONE] == 0:
                     color = [c.CYAN, c.F_CYAN]
-                elif self.content[y][x] == 1:
+                elif self.content[y][x][STONE] == 1:
                     color = [c.WHITE, c.F_WHITE]
-                elif self.content[y][x] == 2:
+                elif self.content[y][x][STONE] == 2:
                     color = [c.RED, c.F_RED]
-                elif self.content[y][x] == 3:
+                elif self.content[y][x][STONE] == 3:
                     color = [c.GREEN, c.F_GREEN]
-                elif self.content[y][x] == 4:
+                elif self.content[y][x][STONE] == 4:
                     color = [c.BLUE, c.F_BLUE]
-                elif self.content[y][x] == 5:
+                elif self.content[y][x][STONE] == 5:
                     color = [c.YELLOW, c.F_YELLOW]
-                elif self.content[y][x] == 6:
+                elif self.content[y][x][STONE] == 6:
                     color = [c.MAGENTA, c.F_MAGENTA]
-                elif self.content[y][x] == 7:
+                elif self.content[y][x][STONE] == 7:
                     color = [c.BLACK, c.F_BLACK]
                 else:
-                    txt = '%2d ' % (self.content[y][x])
+                    txt = '%2d ' % (self.content[y][x][STONE])
                 s += color[0] + color[1] + txt + c.EOC
             s += '|\n'
         for i in range(G.BOARD_SZ):

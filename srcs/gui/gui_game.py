@@ -124,10 +124,10 @@ class GuiGame(BaseGui):
         # draw stones
         for y in range(G.BOARD_SZ):
             for x in range(G.BOARD_SZ):
-                if self.game.board.content[y][x] >= 0:
+                if self.game.board.content[y][x][STONE] >= 0:
                     x_win = line_space + line_space * x
                     y_win = line_space + line_space * y
-                    create_args = {'fill': STONES[self.game.board.content[y][x]]}
+                    create_args = {'fill': STONES[self.game.board.content[y][x][STONE]]}
                     if self.game.board.content_desc[y][x]['debug_color'] is not None:
                         create_args['outline'] = self.game.board.content_desc[y][x]['debug_color']
                         create_args['width'] = self.w_board_sz // 200
@@ -137,7 +137,7 @@ class GuiGame(BaseGui):
                     elif self.last_pos == [x, y]:
                         create_args['outline'] = 'blue'
                         create_args['width'] = self.w_board_sz // 200
-                    elif G.SHOW_VULNERABILITY and self.game.board.vulnerability[y][x]:
+                    elif G.SHOW_VULNERABILITY and self.game.board.content[y][x][VULNERABILITY]:
                         create_args['outline'] = 'red'
                         create_args['width'] = self.w_board_sz // 200
                     self.board_canvas.create_circle(int(x_win), int(y_win), int(line_space * 0.4), **create_args)
