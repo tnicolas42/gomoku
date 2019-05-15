@@ -440,3 +440,4 @@ class Board(SoftBoard):
             for y in range(G.BOARD_SZ):
                 self.content_desc[y][x]['debug_color'] = None
                 self.content_desc[y][x]['debug_marker_color'] = None
+                self.content_desc[y][x]['debug_txt'] = None

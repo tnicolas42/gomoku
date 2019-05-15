@@ -31,7 +31,7 @@ class G:  # class with all global variables
     NB_SQUARE_ARROUND = 1
 
     # the depth of the algorithm
-    DEPTH = 4
+    DEPTH = 2
 
     # used to count more the positive or negative action in heuristic
     H_POSITIVE_MULTIPLIER = 1  # positive number
@@ -54,10 +54,15 @@ class G:  # class with all global variables
 
     DEBUG_ANTICIPATION = False  # print the anticipation
     DEBUG_SEARCH_ZONE = False  # print the search zone
-    DEBUG_KEEP_NODE_PERCENT = False
+    DEBUG_KEEP_NODE_PERCENT = False  # show the possible point to put stones
     SHOW_VULNERABILITY = False  # --show-vulnerability show the vulnerables stones
 
     ASK_VALIDATION = True  # --skip-validation ask before quit, go back to menu, ...
 
+    SPACE_BEFORE_AI_PLAY = False  # before AI turn, the player need to press SPACE
+
     ENABLE_KEEP_NODE_PERCENT = True  # enable the filter to keep only certains nodes
     KEEP_NODE_PERCENT = 0.2  # the percentage of node to keep (in minmax algo)
+    MIN_KEEP_NODE = 3  # keep at least MIN_KEEP_NODE nodes (if the percentage return less than MIN_KEEP_NODE)
+    USE_MAX_KEEP_NODE = True  # if True, use MAX_KEEP_NODE, else... no limit !
+    MAX_KEEP_NODE = 7  # keep max MAX_KEEP_NODE nodes (if the percentage return more than MAX_KEEP_NODE)

@@ -14,6 +14,8 @@ class GuiMenu(BaseGui):
     depth = None
     show_vul_check = None
     show_vul = None
+    sp_before_play_check = None
+    sp_before_play = None
     validateButton = None
 
     def __init__(self, game, gui):
@@ -23,6 +25,7 @@ class GuiMenu(BaseGui):
         self.playerAI = [tk.BooleanVar(), tk.BooleanVar()]
         self.depth = tk.IntVar()
         self.show_vul = tk.BooleanVar()
+        self.sp_before_play = tk.BooleanVar()
 
     def keyPress(self, e):
         if e.keysym == "Return":
@@ -95,6 +98,16 @@ class GuiMenu(BaseGui):
             self.show_vul_check.deselect()
         self.show_vul_check.pack()
 
+        self.sp_before_play_check = tk.Checkbutton(self,
+                                             variable=self.sp_before_play,
+                                             text="press space before AI can play",
+                                             **check_args)
+        if G.SPACE_BEFORE_AI_PLAY:
+            self.sp_before_play_check.select()
+        else:
+            self.sp_before_play_check.deselect()
+        self.sp_before_play_check.pack()
+
         self.create_text(int(self.gui.w_width * 0.5),
                          int(self.gui.w_height * 0.9),
                          text="press enter to play",
@@ -121,3 +134,4 @@ class GuiMenu(BaseGui):
                 G.PLAYERS[i] = "AI"
         G.DEPTH = self.depth.get()
         G.SHOW_VULNERABILITY = self.show_vul.get()
+        G.SPACE_BEFORE_AI_PLAY = self.sp_before_play.get()

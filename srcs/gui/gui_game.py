@@ -46,6 +46,9 @@ class GuiGame(BaseGui):
     def keyPress(self, e):
         if e.keysym in ("BackSpace", "Delete"):
             self.game.board.reset_debug()
+        elif e.keysym == "space":
+            if G.SPACE_BEFORE_AI_PLAY:
+                self.game.players[self.game.id_player_act].ai_waiting_space = False
         # elif e.keysym == "Return":
         #     win = False
         #     for p in self.game.players:
@@ -181,6 +184,11 @@ class GuiGame(BaseGui):
                     y_win = line_space + line_space * y
                     self.board_canvas.create_text(int(x_win),
                                                  int(y_win),
+                                                 fill=complementaryColor(self.game.board.content_desc[y][x]['debug_txt'][1]),
+                                                 font="Times %d bold" % (self.w_width_left * 0.14),
+                                                 text=self.game.board.content_desc[y][x]['debug_txt'][0])
+                    self.board_canvas.create_text(int(x_win),
+                                                 int(y_win),
                                                  fill=self.game.board.content_desc[y][x]['debug_txt'][1],
-                                                 font="Times %d italic bold" % (self.w_width_left * 0.1),
+                                                 font="Times %d" % (self.w_width_left * 0.14),
                                                  text=self.game.board.content_desc[y][x]['debug_txt'][0])
