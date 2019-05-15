@@ -51,7 +51,7 @@ class GuiMenu(BaseGui):
                                          label="size of the board (default: 19x19)",
                                          variable=self.size_board,
                                          **scale_args)
-        self.size_board_scale.set(G.BOARD_SZ)
+        self.size_board_scale.set(G.GET("BOARD_SZ"))
         self.size_board_scale.pack(pady=3)
 
         self.nb_players_scale = tk.Scale(self, from_=2, to=8,
@@ -85,7 +85,7 @@ class GuiMenu(BaseGui):
                                     label="depth",
                                     variable=self.depth,
                                     **scale_args)
-        self.depth_scale.set(G.DEPTH)
+        self.depth_scale.set(G.GET("DEPTH"))
         self.depth_scale.pack()
 
         self.show_vul_check = tk.Checkbutton(self,
@@ -127,11 +127,11 @@ class GuiMenu(BaseGui):
         self.gui.openGame()
 
     def before_quit(self):
-        G.BOARD_SZ = self.size_board.get()
+        G.SET("BOARD_SZ", self.size_board.get())
         G.PLAYERS = ["REAL" for i in range(self.nb_players.get())]
         for i, plAI in enumerate(self.playerAI):
             if plAI.get() == True:
                 G.PLAYERS[i] = "AI"
-        G.DEPTH = self.depth.get()
+        G.SET("DEPTH", self.depth.get())
         G.SHOW_VULNERABILITY = self.show_vul.get()
         G.SPACE_BEFORE_AI_PLAY = self.sp_before_play.get()

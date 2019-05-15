@@ -30,11 +30,11 @@ class AIPlayer(Player):
         if G.DEBUG_KEEP_NODE_PERCENT or G.DEBUG_ANTICIPATION:
             self.game.board.reset_debug()
         # put the first stone in the middle
-        if (self.game.board.remain_places == G.BOARD_SZ * G.BOARD_SZ):
-            self.game.board.put_stone(int(G.BOARD_SZ / 2), int(G.BOARD_SZ / 2), self.stone)
+        if (self.game.board.remain_places == G.GET("BOARD_SZ") * G.GET("BOARD_SZ")):
+            self.game.board.put_stone(int(G.GET("BOARD_SZ") / 2), int(G.GET("BOARD_SZ") / 2), self.stone)
         else:
             transpositionTable = {}
-            depth = min(G.DEPTH, self.game.board.remain_places)
+            depth = min(G.GET("DEPTH"), self.game.board.remain_places)
             nodes = Node(self.game, transpositionTable, not self.stone, -1, -1, depth+1, None)
             move = min_max(nodes, depth)
             if move is None:
@@ -67,27 +67,27 @@ def min_max(node, depth, maximize=True, alpha=float('-inf'), beta=float('inf')):
     if maximize:
         _max = float('-inf')
         maxlst = None
-        if G.ENABLE_KEEP_NODE_PERCENT:
+        if G.GET("ENABLE_KEEP_NODE_PERCENT"):
             keepChilds = []
             for child in node.childs:
                 heuristic(child)
                 if child.heuristic is not None:
-                    if depth == G.DEPTH and child.is_win:
+                    if depth == G.GET("DEPTH") and child.is_win:
                         return {'node': child, 'cost': heuristic(node)}
                     heapq.heappush(keepChilds, MaxHeapObj(child))
-            range_ = max(math.ceil(len(keepChilds) * G.KEEP_NODE_PERCENT), G.MIN_KEEP_NODE)
-            if G.USE_MAX_KEEP_NODE:
-                range_ = min(range_, G.MAX_KEEP_NODE)
+            range_ = max(math.ceil(len(keepChilds) * G.GET("KEEP_NODE_PERCENT")), G.GET("MIN_KEEP_NODE"))
+            if G.GET("USE_MAX_KEEP_NODE"):
+                range_ = min(range_, G.GET("MAX_KEEP_NODE"))
             range_ = range(range_)
         else:
             range_ = node.childs
 
         for i in range_:
-            if G.ENABLE_KEEP_NODE_PERCENT:
+            if G.GET("ENABLE_KEEP_NODE_PERCENT"):
                 child = keepChilds[i].val
             else:
                 child = i
-            if G.DEBUG_KEEP_NODE_PERCENT and depth == G.DEPTH:
+            if G.DEBUG_KEEP_NODE_PERCENT and depth == G.GET("DEPTH"):
                 node.game.board.content_desc[child.y][child.x]['debug_marker_color'] = STONES[child.stone]
 
             childMin = min_max(child, depth-1, False, alpha, beta)
@@ -113,21 +113,21 @@ def min_max(node, depth, maximize=True, alpha=float('-inf'), beta=float('inf')):
     else:
         _min = float('inf')
         minlst = None
-        if G.ENABLE_KEEP_NODE_PERCENT:
+        if G.GET("ENABLE_KEEP_NODE_PERCENT"):
             keepChilds = []
             for child in node.childs:
                 heuristic(child)
                 if child.heuristic is not None:
                     heapq.heappush(keepChilds, child)
-            range_ = max(math.ceil(len(keepChilds) * G.KEEP_NODE_PERCENT), G.MIN_KEEP_NODE)
-            if G.USE_MAX_KEEP_NODE:
-                range_ = min(range_, G.MAX_KEEP_NODE)
+            range_ = max(math.ceil(len(keepChilds) * G.GET("KEEP_NODE_PERCENT")), G.GET("MIN_KEEP_NODE"))
+            if G.GET("USE_MAX_KEEP_NODE"):
+                range_ = min(range_, G.GET("MAX_KEEP_NODE"))
             range_ = range(range_)
         else:
             range_ = node.childs
 
         for i in range_:
-            if G.ENABLE_KEEP_NODE_PERCENT:
+            if G.GET("ENABLE_KEEP_NODE_PERCENT"):
                 child = keepChilds[i]
             else:
                 child = i
