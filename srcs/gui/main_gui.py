@@ -1,11 +1,12 @@
 import os
 import time
 import tkinter as tk
-from tkinter import messagebox
 from platform import system as platform
 from srcs.gui.gui_game import GuiGame
 from srcs.gui.gui_menu import GuiMenu
 from srcs.utils.clock import Clock
+from tkinter import messagebox
+from srcs.utils.stats import *
 from srcs.const import *
 
 
