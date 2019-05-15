@@ -20,6 +20,7 @@ class Game(threading.Thread):
     gui = None  # the gui object
     id_player_act = 0  # id of the actual player
     quit = False
+    reset_game = True
 
     def __init__(self):
         threading.Thread.__init__(self)
@@ -37,35 +38,49 @@ class Game(threading.Thread):
         self.players = []
         for id_, player in enumerate(G.PLAYERS):
             self.players.append(player_types[player](game=self, stone=id_))
+        self.reset_game = False
 
     @get_stats
-    def run(self):
-        """
-        main function of the program
-        this function run the game -> play all players turn, check if there is a winner, ...
-        """
-        while not self.quit:
-            if self.players is None or self.board is None:
-                time.sleep(0.1)
-                continue
+    def run_game(self):
+        while not self.reset_game:
             for id_, player_act in enumerate(self.players):
-                if self.quit:
-                    return False
+                if self.reset_game:
+                    continue
                 self.id_player_act = id_
                 player_act.moving()
+                if self.reset_game:
+                    continue
 
                 # check for a winner in the game
                 for id2_, player_act2 in enumerate(self.players):
                     if id2_ is not self.id_player_act and player_act2.has_win():
                         print(self.board)
                         print("player %d has win" % (id2_))
+                        self.reset_game = True
                         return True
                 if player_act.has_win():
                     print(self.board)
                     print("player %d has win" % (self.id_player_act))
+                    self.reset_game = True
                     return True
                 # check if this is the end of the game
                 if self.board.remain_places <= 0:
                     print(self.board)
                     print("no winner in this game")
+                    self.reset_game = True
                     return False
+
+    def run(self):
+        """
+        main function of the program
+        this function run the game -> play all players turn, check if there is a winner, ...
+        """
+        while not self.quit:
+            if self.reset_game or self.players is None or self.board is None:
+                time.sleep(0.1)
+                continue
+            else:
+                try:
+                    self.run_game()
+                except Exception:
+                    pass

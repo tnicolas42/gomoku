@@ -1,4 +1,4 @@
-from srcs.utils.stats import get_stats
+from srcs.utils.stats import *
 from srcs.const import *
 
 
@@ -207,7 +207,7 @@ def selective_heuristic(node, printDebug=False):
     return val
 
 
-@get_stats
+@get_stats_and_mark()
 def get_heuristic(node, printDebug=False):
     val = selective_heuristic(node, printDebug=printDebug)
 

@@ -1,6 +1,7 @@
 import os
 import time
 import tkinter as tk
+from tkinter import messagebox
 from platform import system as platform
 from srcs.gui.gui_game import GuiGame
 from srcs.gui.gui_menu import GuiMenu
@@ -23,14 +24,13 @@ class Gui(object):
     w_height = None  # width of left band
     w_size_percent = None
     left_band_w_percent = None
-    quit = False
     clock = None  # this is a clock object to control time
 
     gui_game = None
     gui_menu = None
     gui_act = None  # pointer on the actual gui
 
-    def __init__(self, game, title='gomoku', w_size_percent=80, left_band_w_percent=40, rate=10):
+    def __init__(self, game, title='gomoku', skip_menu=False, w_size_percent=80, left_band_w_percent=40, rate=10):
         self.game = game
 
         self.clock = Clock(rate=rate)
@@ -51,8 +51,13 @@ class Gui(object):
         # key binding
         self.win.bind('<Key>', self.keyPress)
 
-        self.openMenu()
+        if skip_menu:
+            self.openGame()
+        else:
+            self.openMenu()
 
+        # center the win
+        self.centerWindows()
         # focus the win
         if platform() == 'Darwin':  # How Mac OS X is identified by Python
             os.system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
@@ -86,14 +91,16 @@ class Gui(object):
         main gui function:
         this function update the gui at a given rate
         """
-        while not self.quit:
+        while not self.game.quit:
             if self.gui_act is not None:
                 self.update()
                 self.redraw()
             self.clock.tick()  # wait until next loop
 
     def on_closing_window(self):
-        self.quit = True
+        if not G.ASK_VALIDATION or messagebox.askokcancel("do you want to quit ?"):
+            self.game.quit = True
+            self.game.reset_game = True
 
     def keyPress(self, e):
         if e.keysym == "Escape":
@@ -109,3 +116,15 @@ class Gui(object):
 
     def redraw(self):
         self.gui_act.redraw()
+
+
+    def centerWindows(self):
+        """
+        "center" the windows in the middle of the screen
+        """
+        # Gets both half the screen width/height and window width/height
+        positionRight = int(self.win.winfo_screenwidth()/2 - self.w_width/2)
+        positionDown = int(self.win.winfo_screenheight()/2 - self.w_height/2)
+
+        # Positions the window in the center of the page.
+        self.win.geometry("+{}+{}".format(positionRight, positionDown))

@@ -2,6 +2,7 @@ import time
 import tkinter as tk
 from srcs.utils.utils import complementaryColor
 from srcs.gui.base_gui import BaseGui
+from tkinter import messagebox
 from srcs.const import *
 
 class GuiGame(BaseGui):
@@ -45,6 +46,18 @@ class GuiGame(BaseGui):
     def keyPress(self, e):
         if e.keysym in ("BackSpace", "Delete"):
             self.game.board.reset_debug()
+        # elif e.keysym == "Return":
+        #     win = False
+        #     for p in self.game.players:
+        #         if p.has_win():
+        #             win = True
+        #             break
+        #     if not G.ASK_VALIDATION or win or messagebox.askokcancel("do you want to go back to menu ?"):
+        #         self.gui.openMenu()
+        # # these lines generate some crashes -> RuntimeError: main thread is not in main loop
+
+    def before_quit(self):
+        self.game.reset_game = True
 
     def draw(self):
         self.redraw()

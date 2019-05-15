@@ -59,9 +59,9 @@ class GuiMenu(BaseGui):
         self.nb_players_scale.pack()
 
         self.playerAICheck[0] = tk.Checkbutton(self,
-                                          variable=self.playerAI[0],
-                                          text="player 1 AI (only for 2 players)",
-                                          **check_args)
+                                               variable=self.playerAI[0],
+                                               text="player 1 AI (only for 2 players)",
+                                               **check_args)
         if G.PLAYERS[0] == "AI":
             self.playerAICheck[0].select()
         else:
@@ -69,9 +69,9 @@ class GuiMenu(BaseGui):
         self.playerAICheck[0].pack()
 
         self.playerAICheck[1] = tk.Checkbutton(self,
-                                          variable=self.playerAI[1],
-                                          text="player 2 AI (only for 2 players)",
-                                          **check_args)
+                                               variable=self.playerAI[1],
+                                               text="player 2 AI (only for 2 players)",
+                                               **check_args)
         if G.PLAYERS[1] == "AI":
             self.playerAICheck[1].select()
         else:
@@ -79,9 +79,9 @@ class GuiMenu(BaseGui):
         self.playerAICheck[1].pack()
 
         self.depth_scale = tk.Scale(self, from_=1, to=15,
-                                         label="depth",
-                                         variable=self.depth,
-                                         **scale_args)
+                                    label="depth",
+                                    variable=self.depth,
+                                    **scale_args)
         self.depth_scale.set(G.DEPTH)
         self.depth_scale.pack()
 
@@ -95,11 +95,10 @@ class GuiMenu(BaseGui):
             self.show_vul_check.deselect()
         self.show_vul_check.pack()
 
-        self.create_text(
-                    int(self.gui.w_width * 0.5),
-                    int(self.gui.w_height * 0.9),
-                    text="press enter to play",
-                    **txt_args)
+        self.create_text(int(self.gui.w_width * 0.5),
+                         int(self.gui.w_height * 0.9),
+                         text="press enter to play",
+                         **txt_args)
 
     def redraw(self):
         if self.nb_players.get() != 2:
