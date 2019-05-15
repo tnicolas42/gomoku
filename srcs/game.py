@@ -80,7 +80,4 @@ class Game(threading.Thread):
                 time.sleep(0.1)
                 continue
             else:
-                try:
-                    self.run_game()
-                except Exception:
-                    pass
+                self.run_game()

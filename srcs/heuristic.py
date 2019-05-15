@@ -78,6 +78,8 @@ def _check_aligned_dir(game, node, x, y, stone, addx, addy, check_return, multip
         new_y -= addy
 
     if nb_aligned >= G.NB_ALIGNED_VICTORY:  # AAAAA
+        if game.id_player_act == stone:
+            node.is_win = True
         check_return['nb_win'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
     elif nb_aligned >= 4:
         if free_side[0] + free_side[1] == 2:  # .AAAA.
@@ -131,6 +133,9 @@ def selective_heuristic(node, printDebug=False):
     """
     calc the heuristic with particular attention with the ordered posed stones
     """
+    if node.heuristic is not None:
+        return node.heuristic
+
     game = node.game
     check_return = dict(
         nb_two=0,
@@ -148,10 +153,14 @@ def selective_heuristic(node, printDebug=False):
     tmp = node
     while tmp.parent:
         node_hist.append((tmp.x, tmp.y, int(tmp.stone)))
+        tmp.is_stone_on_board = True
+        if G.ENABLE_KEEP_NODE_PERCENT:
+            break
         tmp = tmp.parent
 
-    node_hist.reverse()
     lenhist = len(node_hist)
+    if lenhist > 1:
+        node_hist.reverse()
     for i, (x, y, stone) in enumerate(node_hist):
         if node.board.is_allowed(x, y, stone):
             nb_destroyed = node.board.put_stone(x, y, stone, test=True)
@@ -160,6 +169,8 @@ def selective_heuristic(node, printDebug=False):
                 mul = 1
                 if game.players[stone].destroyed_stones_count + nb_destroyed >= G.STONES_DESTROYED_VICTORY:
                     mul = G.H_SELECT_DESTROY_VICTORY_ADDER
+                    if game.id_player_act == stone:
+                        node.is_win = True
                 check_return['nb_destroyed'] += mul * (game.players[stone].destroyed_stones_count + 1) * mul * nb_destroyed * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
             _check_stone(game, node, x, y, check_return,
                         multiplier=mul)
@@ -211,4 +222,5 @@ def selective_heuristic(node, printDebug=False):
 def get_heuristic(node, printDebug=False):
     val = selective_heuristic(node, printDebug=printDebug)
 
+    node.heuristic = val
     return val

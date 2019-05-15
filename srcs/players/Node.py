@@ -9,7 +9,7 @@ class Node():
     this function store a possible move for the ai minMax algorithm
     """
     def __repr__(self):
-        return '(' + str(self.x) + ':' + str(self.y) + ')'
+        return '(' + str(self.x) + ':' + str(self.y) + '->' + str(self.heuristic) + ')'
 
     @get_stats
     def __init__(self, game, transpositionTable, stone, x, y, depth, parent=None):
@@ -27,6 +27,8 @@ class Node():
         self.board = SoftBoard(self.game, parent_content)
 
         self.childs = []
+        self.heuristic = None
+        self.is_win = False
 
     @get_stats
     def get_childs_coord(self):
@@ -59,3 +61,34 @@ class Node():
                 self.game.board.content_desc[y][x]['debug_marker_color'] = 'red'
             self.childs.append(Node(self.game, self.transpositionTable, not self.stone, x, y, self.depth - 1, self))
 
+    # compare function <
+    def __lt__(self, other):
+        if self.heuristic == None:
+            return False
+        elif other.heuristic == None:
+            return True
+        return self.heuristic < other.heuristic
+
+    # compare function <=
+    def __le__(self, other):
+        if self.heuristic == None:
+            return False
+        elif other.heuristic == None:
+            return True
+        return self.heuristic <= other.heuristic
+
+    # compare function >=
+    def __ge__(self, other):
+        if self.heuristic == None:
+            return False
+        elif other.heuristic == None:
+            return True
+        return self.heuristic >= other.heuristic
+
+    # compare function >
+    def __gt__(self, other):
+        if self.heuristic == None:
+            return False
+        elif other.heuristic == None:
+            return True
+        return self.heuristic > other.heuristic

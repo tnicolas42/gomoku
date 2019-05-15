@@ -427,6 +427,7 @@ class Board(SoftBoard):
                     'win': 0,  # True if the player win wit this stone
                     'debug_color': None,  # set an outline of this color around stones
                     'debug_marker_color': None,  # set a marker of this color one this point (even on EMPTY STONES)
+                    'debug_txt': None,  # show text (tuple: [text, color])
                 }
             for i in range(G.BOARD_SZ)] for j in range(G.BOARD_SZ)
         ]

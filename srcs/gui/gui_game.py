@@ -176,3 +176,11 @@ class GuiGame(BaseGui):
                     self.board_canvas.create_line(int(x_win + line_space * 0.4), int(y_win - line_space * 0.4),
                                                     int(x_win - line_space * 0.4), int(y_win + line_space * 0.4),
                                                     **cross_line_args)
+                if self.game.board.content_desc[y][x]['debug_txt'] is not None:
+                    x_win = line_space + line_space * x
+                    y_win = line_space + line_space * y
+                    self.board_canvas.create_text(int(x_win),
+                                                 int(y_win),
+                                                 fill=self.game.board.content_desc[y][x]['debug_txt'][1],
+                                                 font="Times %d italic bold" % (self.w_width_left * 0.1),
+                                                 text=self.game.board.content_desc[y][x]['debug_txt'][0])
