@@ -1,102 +1,66 @@
-import os
 import time
 import tkinter as tk
-from platform import system as platform
 from srcs.utils.utils import complementaryColor
-from srcs.utils.clock import Clock
+from srcs.gui.base_gui import BaseGui
+from tkinter import messagebox
 from srcs.const import *
 
-
-def _create_circle(self, x, y, r, **kwargs):
-    return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)
-tk.Canvas.create_circle = _create_circle
-
-
-class Gui(object):
-    """
-    this object is used for the gui -> draw the game o the screen and get mouse & keyboard events
-    """
-    game = None  # the game object
-    win = None  # tk.Tk object
+class GuiGame(BaseGui):
     w_board_sz = None  # size of board on window
     w_width_left = None  # width of left band
     board_canvas = None  # the canvas that contain the board
     left_canvas = None  # the canvas that contain the left band
-    quit = False
-    clock = None  # this is a clock object to control time
-    show_vulnerability = None
     last_pos = [None, None]
     error_pos = [[None, None], 0]  # to show an error (not well placed stone) -> [[x, y] time.time] -> the error is showed only for a limited time
 
-    def __init__(self, game, title='gomoku', w_size_percent=80, left_band_w_percent=40, rate=10, show_vulnerability=True):
-        self.game = game
-        self.show_vulnerability = show_vulnerability
+    def __init__(self, game, gui, w_size_percent, left_band_w_percent):
+        BaseGui.__init__(self, game=game, gui=gui)
 
-        self.clock = Clock(rate=rate)
+        self.game.reinit()
 
-        self.win = tk.Tk()
-        self.win.title(title)
-        max_size = min(self.win.winfo_screenwidth(), self.win.winfo_screenheight())
+        max_size = min(self.gui.win.winfo_screenwidth(), self.gui.win.winfo_screenheight())
         self.w_board_sz = int(max_size * (w_size_percent / 100))
         self.w_width_left = int(self.w_board_sz * (left_band_w_percent / 100))
 
-        self.win.geometry(str(self.w_board_sz + self.w_width_left) + 'x' + str(self.w_board_sz))
-        self.win.resizable(0, 0) # Don't allow resizing in the x or y direction
-
-        self.left_canvas = tk.Canvas(self.win, width=self.w_width_left, height=self.w_board_sz, bg="black")
+        self.left_canvas = tk.Canvas(self, width=self.w_width_left, height=self.w_board_sz, bg="black")
         self.left_canvas.pack(side=tk.LEFT)
 
-        self.board_canvas = tk.Canvas(self.win, width=self.w_board_sz, height=self.w_board_sz, bg="red")
+        self.board_canvas = tk.Canvas(self, width=self.w_board_sz, height=self.w_board_sz, bg="red")
         self.board_canvas.pack(side=tk.RIGHT)
         self.board_canvas.bind("<Button-1>", self.board_clicked)
-
-        self.win.protocol("WM_DELETE_WINDOW", self.on_closing_window)
-
-        # key binding
-        self.win.bind('<Key>', self.keyPress)
-
-        # focus the win
-        if platform() == 'Darwin':  # How Mac OS X is identified by Python
-            os.system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
-
-    def run(self):
-        """
-        main gui function:
-        this function update the gui at a given rate
-        """
-        while not self.quit:
-            self.update()
-            self.redraw()
-            self.clock.tick()  # wait until next loop
 
     def board_clicked(self, event):
         """
         called when the mouse click on the board canvas
         get the position of the intersection under cursor and update update the player
         """
-        line_space = self.w_board_sz / (self.game.board.size + 1)
+        line_space = self.w_board_sz / (G.BOARD_SZ + 1)
         x = (event.x - (line_space / 2)) / line_space
         y = (event.y - (line_space / 2)) / line_space
-        if x >= self.game.board.size or y >= self.game.board.size or \
+        if x >= G.BOARD_SZ or y >= G.BOARD_SZ or \
                 event.x < line_space / 2 or event.y < line_space / 2:
             return
         # tell to the actual player that we click on this position
         self.game.players[self.game.id_player_act].clicked_on(int(x), int(y))
 
-    def on_closing_window(self):
-        self.quit = True
-
     def keyPress(self, e):
-        if e.keysym == "Escape":
-            self.on_closing_window()
-        elif e.keysym in ("BackSpace", "Delete"):
+        if e.keysym in ("BackSpace", "Delete"):
             self.game.board.reset_debug()
+        # elif e.keysym == "Return":
+        #     win = False
+        #     for p in self.game.players:
+        #         if p.has_win():
+        #             win = True
+        #             break
+        #     if not G.ASK_VALIDATION or win or messagebox.askokcancel("do you want to go back to menu ?"):
+        #         self.gui.openMenu()
+        # # these lines generate some crashes -> RuntimeError: main thread is not in main loop
 
-    def update(self):
-        """
-        update all events (mouse click, keydown, ...)
-        """
-        self.win.update()
+    def before_quit(self):
+        self.game.reset_game = True
+
+    def draw(self):
+        self.redraw()
 
     def redraw(self):
         """
@@ -144,35 +108,35 @@ class Gui(object):
         """
         self.board_canvas.delete("all")
         # create bg
-        self.board_canvas.create_rectangle(0, 0, self.w_board_sz, self.w_board_sz, fill="#F6AA49")
+        self.board_canvas.create_rectangle(0, 0, self.w_board_sz, self.w_board_sz, fill=BG_COLOR)
 
         # create lines an cols
-        line_space = self.w_board_sz / (self.game.board.size + 1)  # space btw 2 lines
+        line_space = self.w_board_sz / (G.BOARD_SZ + 1)  # space btw 2 lines
         line_width = max(1, line_space / 10)
         x1 = line_space
         x2 = self.w_board_sz - line_space
-        for i in range(self.game.board.size):
+        for i in range(G.BOARD_SZ):
             y1 = line_space + line_space * i
             y2 = y1
             self.board_canvas.create_line(int(x1), int(y1), int(x2), int(y2), fill="black", width=line_width)
 
         y1 = line_space
         y2 = self.w_board_sz - line_space
-        for i in range(self.game.board.size):
+        for i in range(G.BOARD_SZ):
             x1 = line_space + line_space * i
             x2 = x1
             self.board_canvas.create_line(int(x1), int(y1), int(x2), int(y2), fill="black", width=line_width)
 
         # add point
-        for x in range(self.game.board.size // 2 % 6, self.game.board.size, 6):
-            for y in range(self.game.board.size // 2 % 6, self.game.board.size, 6):
+        for x in range(G.BOARD_SZ // 2 % 6, G.BOARD_SZ, 6):
+            for y in range(G.BOARD_SZ // 2 % 6, G.BOARD_SZ, 6):
                 x_win = line_space + line_space * x
                 y_win = line_space + line_space * y
                 self.board_canvas.create_circle(int(x_win), int(y_win), int(line_space * 0.15), fill='black')
 
         # draw stones
-        for y in range(self.game.board.size):
-            for x in range(self.game.board.size):
+        for y in range(G.BOARD_SZ):
+            for x in range(G.BOARD_SZ):
                 if self.game.board.content[y][x] >= 0:
                     x_win = line_space + line_space * x
                     y_win = line_space + line_space * y
@@ -186,7 +150,7 @@ class Gui(object):
                     elif self.last_pos == [x, y]:
                         create_args['outline'] = 'blue'
                         create_args['width'] = self.w_board_sz // 200
-                    elif self.show_vulnerability and self.game.board.content_desc[y][x]['vulnerability']:
+                    elif G.SHOW_VULNERABILITY and self.game.board.vulnerability[y][x]:
                         create_args['outline'] = 'red'
                         create_args['width'] = self.w_board_sz // 200
                     self.board_canvas.create_circle(int(x_win), int(y_win), int(line_space * 0.4), **create_args)
