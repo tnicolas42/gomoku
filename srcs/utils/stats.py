@@ -192,7 +192,7 @@ def print_stats_one_function(name, val, compact=False, pr_nb_call=True, pr_total
                     s += 'min: %fs ' % (val['min_time'])
                 if pr_max_time and val['pr_max_time']:
                     s += 'max: %fs ' % (val['max_time'])
-        s = s.strip() + ')'
+        s = s.strip() + ')\n'
     else:
         s = '%s.py -> %s():\n' % (val['module'], name)
         if pr_nb_call and val['pr_nb_call']:
@@ -206,8 +206,8 @@ def print_stats_one_function(name, val, compact=False, pr_nb_call=True, pr_total
                 if pr_min_time and val['pr_min_time']:
                     s += '\tmin: %fs\n' % (val['min_time'])
                 if pr_max_time and val['pr_max_time']:
-                    s += '\tmax: %fs' % (val['max_time'])
-    print(s)
+                    s += '\tmax: %fs\n' % (val['max_time'])
+    print(end=s)
 
 def print_stats(compact=False, pr_nb_call=True, pr_total_time=True, pr_mean_time=True, pr_min_time=True, pr_max_time=True):
     """

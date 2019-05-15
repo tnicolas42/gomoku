@@ -77,7 +77,7 @@ class G:  # class with all global variables
         dict(),  # hard mode (same as default)
     ]
 
-    DIFICULTY = len(DIFICULTY_LEVEL)-1  # DIfICULTY_LEVEL[DIFICULTY]
+    DIFICULTY = 1  # DIfICULTY_LEVEL[DIFICULTY]
 
     @staticmethod
     def GET(name):
@@ -100,7 +100,7 @@ class G:  # class with all global variables
         print("play on a board of %d*%d.\nWin conditions:\n\t- %d or more stones aligned (if at least one stone is vulnerable, the other player have one turn to destroy it)\n\t- %d stones destroyed" %
               (G.GET("BOARD_SZ"), G.GET("BOARD_SZ"), G.GET("NB_ALIGNED_VICTORY"), G.GET("STONES_DESTROYED_VICTORY")))
         if len(G.PLAYERS) == 2 and "AI" in G.PLAYERS:
-            print("using MinMax algorithm: depth=%d. AI dificulty: %d/%d: %s vs %s" %
+            print("using MinMax algorithm: depth: %d. AI dificulty: %d/%d: %s vs %s" %
                   (G.GET("DEPTH"), G.DIFICULTY, len(G.DIFICULTY_LEVEL)-1, G.PLAYERS[0], G.PLAYERS[1]))
             if G.SPACE_BEFORE_AI_PLAY:
                 print("for the IA turn, press space to start calculation")
