@@ -35,7 +35,7 @@ class G:  # class with all global variables
 
     # used to count more the positive or negative action in heuristic
     H_POSITIVE_MULTIPLIER = 1  # positive number
-    H_NEGATIVE_MULTIPLIER = -2  # negative number
+    H_NEGATIVE_MULTIPLIER = -1  # negative number
 
     # on heuristic
     H_SELECT_TWO = 10 // 2  # .AA. BAA.
