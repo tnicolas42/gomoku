@@ -37,12 +37,9 @@ class SoftBoard(object):
                 STONE_EMPTY if content == [] else content[j][i]  # player id or STONE_EMPTY
             for i in range(G.BOARD_SZ)] for j in range(G.BOARD_SZ)
         ]
-        self.content_desc = [
-            [
-                {
-                    'vulnerability': False,  # True if vulnerable (BAA.)
-                }
-            for i in range(G.BOARD_SZ)] for j in range(G.BOARD_SZ)
+        # True if vulnerable (BAA.)
+        self.vulnerability = [
+            [False for i in range(G.BOARD_SZ)] for j in range(G.BOARD_SZ)
         ]
         self.remain_places = G.BOARD_SZ * G.BOARD_SZ
 
@@ -73,9 +70,9 @@ class SoftBoard(object):
         )
         for vul_tab_i in vul_tab:
             if vul_cond(*vul_tab_i):
-                self.content_desc[y][x]['vulnerability'] = True
+                self.vulnerability[y][x] = True
                 return True
-        self.content_desc[y][x]['vulnerability'] = False
+        self.vulnerability[y][x] = False
         return False
 
     def check_destroyable(self, x, y, stone):
@@ -121,14 +118,14 @@ class SoftBoard(object):
         """
         nb_aligned = 1
         is_aligned_vulnerable = [False, False]
-        if self.content_desc[y][x]['vulnerability']:
+        if self.vulnerability[y][x]:
             is_aligned_vulnerable = [True, True]
         nb_aligned_non_vulnerable = 1
         new_x = x + addx
         new_y = y + addy
         while 0 <= new_x < G.BOARD_SZ and 0 <= new_y < G.BOARD_SZ:
             if self.content[new_y][new_x] == stone:
-                if self.content_desc[new_y][new_x]['vulnerability']:
+                if self.vulnerability[new_y][new_x]:
                     is_aligned_vulnerable[0] = True
                 if not is_aligned_vulnerable[0]:
                     nb_aligned_non_vulnerable += 1
@@ -141,7 +138,7 @@ class SoftBoard(object):
         new_y = y - addy
         while 0 <= new_x < G.BOARD_SZ and 0 <= new_y < G.BOARD_SZ:
             if self.content[new_y][new_x] == stone:
-                if self.content_desc[new_y][new_x]['vulnerability']:
+                if self.vulnerability[new_y][new_x]:
                     is_aligned_vulnerable[1] = True
                 if not is_aligned_vulnerable[1]:
                     nb_aligned_non_vulnerable += 1
@@ -427,7 +424,6 @@ class Board(SoftBoard):
         self.content_desc = [
             [
                 {
-                    'vulnerability': False,  # True if vulnerable (BAA.)
                     'win': 0,  # True if the player win wit this stone
                     'debug_color': None,  # set an outline of this color around stones
                     'debug_marker_color': None,  # set a marker of this color one this point (even on EMPTY STONES)
