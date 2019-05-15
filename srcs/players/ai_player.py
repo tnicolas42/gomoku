@@ -24,7 +24,8 @@ class AIPlayer(Player):
             transpositionTable = {}
             depth = min(G.DEPTH, self.game.board.remain_places)
             nodes = Node(self.game, transpositionTable, not self.stone, -1, -1, depth+1, None)
-            move = min_max(nodes, depth, True, float('-inf'), float('inf'))
+            # move = min_max(nodes, depth, True, float('-inf'), float('inf'))
+            move = iterative_deepening(nodes, depth)
             if move is None:
                 return None
             if G.DEBUG_ANTICIPATION:
@@ -46,27 +47,56 @@ def is_terminal_node(node):
     node.setChilds()
     return len(node.childs) == 0
 
-def min_max(node, depth, maximize, alpha, beta):
+def iterative_deepening(node, depth):
+    firstguess = {'node': None, 'cost': 0}
+    for d in range(1, depth + 1):
+        # print(depth)
+        firstguess = mtdf(node, firstguess, d)
+        # print(firstguess)
+    return firstguess
+
+def mtdf(node, f, d):
+    g = f['cost']
+    upperBound = float('inf')
+    lowerBound = float('-inf')
+
+    while lowerBound < upperBound:
+        beta = max(g, lowerBound + 1)
+        # print('-----')
+        f = alpha_beta(node, d, False, beta - 1, beta)
+        g = f['cost']
+        # print(f)
+        # print('lowerBound:', lowerBound, 'upperBound:', upperBound)
+        # print('g < beta: ', g, '<', beta, '=', g < beta)
+        if g < beta:
+            upperBound = g
+        else:
+            lowerBound = g
+    return f
+
+def alpha_beta(node, depth, maximize, alpha, beta):
     """
-    min_max algorithm implementation
+    alpha_beta algorithm implementation
     """
     if node.game.reset_game:
         return None
     if depth == 0 or is_terminal_node(node):
         return {'node': node, 'cost': heuristic(node)}
     if maximize:
-        _max = float('-inf')
+        best = float('-inf')
         maxlst = None
         for child in node.childs:
-            childMin = min_max(child, depth-1, False, alpha, beta)
+            if best >= beta:
+                break
+            childMin = alpha_beta(child, depth-1, False, alpha, beta)
             if childMin['cost'] is None:
                 continue
-            if childMin['cost'] > _max:
-                _max = childMin['cost']
+            if childMin['cost'] > best:
+                best = childMin['cost']
                 maxlst = [childMin['node']]
-            elif childMin['cost'] == _max:
+            elif childMin['cost'] == best:
                 maxlst.append(childMin['node'])
-            alpha = max(alpha, _max)
+            alpha = max(alpha, best)
             if beta <= alpha:
                 break
         if maxlst is None:
@@ -75,20 +105,22 @@ def min_max(node, depth, maximize, alpha, beta):
             _node = random.choice(maxlst)
         else:
             _node = maxlst[0]
-        return {'node': _node, 'cost': _max}
+        return {'node': _node, 'cost': best}
     else:
-        _min = float('inf')
+        best = float('inf')
         minlst = None
         for child in node.childs:
-            childMax = min_max(child, depth-1, True, alpha, beta)
+            if best <= alpha:
+                break
+            childMax = alpha_beta(child, depth-1, True, alpha, beta)
             if childMax['cost'] is None:
                 continue
-            if childMax['cost'] < _min:
-                _min = childMax['cost']
+            if childMax['cost'] < best:
+                best = childMax['cost']
                 minlst = [childMax['node']]
-            elif childMax['cost'] == _min:
+            elif childMax['cost'] == best:
                 minlst.append(childMax['node'])
-            beta = min(beta, _min)
+            beta = min(beta, best)
             if beta <= alpha:
                 break
         if minlst is None:
@@ -97,4 +129,4 @@ def min_max(node, depth, maximize, alpha, beta):
             _node = random.choice(minlst)
         else:
             _node = minlst[0]
-        return {'node': _node, 'cost': _min}
+        return {'node': _node, 'cost': best}
