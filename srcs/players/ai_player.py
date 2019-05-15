@@ -20,8 +20,8 @@ class AIPlayer(Player):
         Player.__init__(self, *args, **kwargs)
         self.type_ = "AI"
 
-    @set_marker()
-    @get_and_print_stats()
+    @set_marker(aftertxt="")
+    @get_stats_and_mark()
     def move(self):
         """
         this function is called when the AI need to move

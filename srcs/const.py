@@ -25,6 +25,7 @@ class G:  # class with all global variables
     DEBUG_ANTICIPATION = False  # print the anticipation
     DEBUG_SEARCH_ZONE = False  # print the search zone
     DEBUG_KEEP_NODE_PERCENT = False  # show the possible point to put stones
+    DEBUG_PRINT_STATE = True  # print the state at the start of the game
     SHOW_VULNERABILITY = False  # --show-vulnerability show the vulnerables stones
 
     ASK_VALIDATION = True  # --skip-validation ask before quit, go back to menu, ...
@@ -34,8 +35,8 @@ class G:  # class with all global variables
     DIFICULTY_DEFAULT = dict(
         # game rules
         BOARD_SZ = 19,  # --board-size #
-        STONES_DESTROYED_VICTORY = 10,  # if a player destroy STONES_DESTROYED_VICTORY -> he win
         NB_ALIGNED_VICTORY = 5,  # if a player align at least NB_ALIGNED_VICTORY and if there is no way to destroy the aligned stones -> he win
+        STONES_DESTROYED_VICTORY = 10,  # if a player destroy STONES_DESTROYED_VICTORY -> he win
 
         # algo variables
         DEPTH = 4,  # the depth of the algorithm
@@ -76,7 +77,7 @@ class G:  # class with all global variables
         dict(),  # hard mode (same as default)
     ]
 
-    DIFICULTY = -1  # DIfICULTY_LEVEL[DIFICULTY]
+    DIFICULTY = len(DIFICULTY_LEVEL)-1  # DIfICULTY_LEVEL[DIFICULTY]
 
     @staticmethod
     def GET(name):
@@ -93,3 +94,18 @@ class G:  # class with all global variables
         else:
             print("ERROR in G.SET(" + name + ", " + str(val) + ")")
             exit(1)
+
+    @staticmethod
+    def PRINT_STATE():
+        print("play on a board of %d*%d.\nWin conditions:\n\t- %d or more stones aligned (if at least one stone is vulnerable, the other player have one turn to destroy it)\n\t- %d stones destroyed" %
+              (G.GET("BOARD_SZ"), G.GET("BOARD_SZ"), G.GET("NB_ALIGNED_VICTORY"), G.GET("STONES_DESTROYED_VICTORY")))
+        if len(G.PLAYERS) == 2 and "AI" in G.PLAYERS:
+            print("using MinMax algorithm: depth=%d. AI dificulty: %d/%d: %s vs %s" %
+                  (G.GET("DEPTH"), G.DIFICULTY, len(G.DIFICULTY_LEVEL)-1, G.PLAYERS[0], G.PLAYERS[1]))
+            if G.SPACE_BEFORE_AI_PLAY:
+                print("for the IA turn, press space to start calculation")
+            if G.SHOW_VULNERABILITY:
+                print("to help you, the vulnerables stones are highlight")
+        else:
+            print("%d players, no AI" % (len(G.PLAYERS)))
+        print()

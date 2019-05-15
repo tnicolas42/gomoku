@@ -80,4 +80,6 @@ class Game(threading.Thread):
                 time.sleep(0.1)
                 continue
             else:
+                if G.DEBUG_PRINT_STATE:
+                    G.PRINT_STATE()
                 self.run_game()

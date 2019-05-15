@@ -218,7 +218,7 @@ def selective_heuristic(node, printDebug=False):
     return val
 
 
-@get_stats_and_mark()
+@get_stats
 def get_heuristic(node, printDebug=False):
     val = selective_heuristic(node, printDebug=printDebug)
 

@@ -54,8 +54,8 @@ class GuiMenu(BaseGui):
         self.size_board_scale.set(G.GET("BOARD_SZ"))
         self.size_board_scale.pack(pady=3)
 
-        self.nb_players_scale = tk.Scale(self, from_=2, to=8,
-                                         label="number of players (if > 2 you can't use AI)",
+        self.nb_players_scale = tk.Scale(self, from_=1, to=8,
+                                         label="number of players (if not 2 you can't use AI)",
                                          variable=self.nb_players,
                                          **scale_args)
         self.nb_players_scale.set(len(G.PLAYERS))

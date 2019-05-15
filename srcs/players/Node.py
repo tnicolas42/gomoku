@@ -11,7 +11,6 @@ class Node():
     def __repr__(self):
         return '(' + str(self.x) + ':' + str(self.y) + '->' + str(self.heuristic) + ')'
 
-    @get_stats
     def __init__(self, game, transpositionTable, stone, x, y, depth, parent=None):
         self.game = game
         self.transpositionTable = transpositionTable
@@ -30,7 +29,6 @@ class Node():
         self.heuristic = None
         self.is_win = False
 
-    @get_stats
     def get_childs_coord(self):
         testChilds = dict()
         for y in range(G.GET("BOARD_SZ")):
@@ -50,7 +48,7 @@ class Node():
             tmp = tmp.parent
         return testChilds
 
-    @get_stats_and_mark()
+    @get_stats
     def setChilds(self):
         testChilds = self.get_childs_coord()
 
