@@ -10,8 +10,8 @@ class GuiMenu(BaseGui):
     nb_players = None
     playerAICheck = [None, None]
     playerAI = [None, None]
-    depth_scale = None
-    depth = None
+    dificulty_scale = None
+    dificulty = None
     show_vul_check = None
     show_vul = None
     sp_before_play_check = None
@@ -23,7 +23,7 @@ class GuiMenu(BaseGui):
         self.size_board = tk.IntVar()
         self.nb_players = tk.IntVar()
         self.playerAI = [tk.BooleanVar(), tk.BooleanVar()]
-        self.depth = tk.IntVar()
+        self.dificulty = tk.IntVar()
         self.show_vul = tk.BooleanVar()
         self.sp_before_play = tk.BooleanVar()
 
@@ -81,12 +81,12 @@ class GuiMenu(BaseGui):
             self.playerAICheck[1].deselect()
         self.playerAICheck[1].pack()
 
-        self.depth_scale = tk.Scale(self, from_=1, to=15,
-                                    label="depth",
-                                    variable=self.depth,
+        self.dificulty_scale = tk.Scale(self, from_=0, to=len(G.DIFICULTY_LEVEL)-1,
+                                    label="dificulty",
+                                    variable=self.dificulty,
                                     **scale_args)
-        self.depth_scale.set(G.GET("DEPTH"))
-        self.depth_scale.pack()
+        self.dificulty_scale.set(G.DIFICULTY)
+        self.dificulty_scale.pack()
 
         self.show_vul_check = tk.Checkbutton(self,
                                              variable=self.show_vul,
@@ -132,6 +132,6 @@ class GuiMenu(BaseGui):
         for i, plAI in enumerate(self.playerAI):
             if plAI.get() == True:
                 G.PLAYERS[i] = "AI"
-        G.SET("DEPTH", self.depth.get())
+        G.DIFICULTY = self.dificulty.get()
         G.SHOW_VULNERABILITY = self.show_vul.get()
         G.SPACE_BEFORE_AI_PLAY = self.sp_before_play.get()

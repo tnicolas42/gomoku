@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--board-size', type=int, default=G.GET("BOARD_SZ"), choices=range(1,51), metavar="[1-50]",
                             help="this is the size of the board")
-    parser.add_argument('--dificulty', type=int, default=G.DIFICULTY, choices=range(0,len(G.DIFICULTY_LEVEL)), metavar="[0-%d]" % (len(G.DIFICULTY_LEVEL)),
+    parser.add_argument('--dificulty', type=int, default=G.DIFICULTY, choices=range(0,len(G.DIFICULTY_LEVEL)), metavar="[0-%d]" % (len(G.DIFICULTY_LEVEL)-1),
                             help="this is the dificulty level")
 
     parser.add_argument("--w-size-percent", type=int, default=80, choices=range(30,101), metavar="[30-100]",

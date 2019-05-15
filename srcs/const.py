@@ -65,7 +65,10 @@ class G:  # class with all global variables
     )
     DIFICULTY_LEVEL = [  # from easyer to harder
         dict(  # easy mode
-            DEPTH = 1,
+            DEPTH = 2,
+            H_SELECT_VULNERABLILITY = 0,
+            H_SELECT_DESTROYED = 0,
+            H_SELECT_DESTROY_VICTORY_ADDER = 0,
         ),
         dict(  # normal mode
             DEPTH = 2,
@@ -85,5 +88,8 @@ class G:  # class with all global variables
     def SET(name, val):
         if name in G.DIFICULTY_LEVEL[G.DIFICULTY]:
             G.DIFICULTY_LEVEL[G.DIFICULTY][name] = val
-        else:
+        elif name in G.DIFICULTY_DEFAULT:
             G.DIFICULTY_DEFAULT[name] = val
+        else:
+            print("ERROR in G.SET(" + name + ", " + str(val) + ")")
+            exit(1)
