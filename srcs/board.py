@@ -54,7 +54,7 @@ class SoftBoard(object):
         vul_cond = lambda x1, y1, x2, y2, x3, y3: (
                         0 <= x1 < G.GET("BOARD_SZ") and 0 <= x2 < G.GET("BOARD_SZ") and 0 <= x3 < G.GET("BOARD_SZ") and
                         0 <= y1 < G.GET("BOARD_SZ") and 0 <= y2 < G.GET("BOARD_SZ") and 0 <= y3 < G.GET("BOARD_SZ") and
-                        self.content[y][x] == self.content[y2][x2] and
+                        stone == self.content[y2][x2] and
                         self.content[y1][x1] != stone and self.content[y3][x3] != stone and
                         self.content[y1][x1] != self.content[y3][x3] and
                         (self.content[y1][x1] == STONE_EMPTY or self.content[y3][x3] == STONE_EMPTY))
