@@ -6,6 +6,7 @@ from srcs.heuristic import get_heuristic
 from srcs.players.player import Player
 from srcs.players.Node import Node
 from srcs.utils.stats import *
+from srcs.utils.u_board import _at, _set
 from srcs.const import *
 
 class MaxHeapObj(object):
@@ -35,7 +36,7 @@ class AIPlayer(Player):
         else:
             transpositionTable = {}
             depth = min(G.GET("DEPTH"), self.game.board.remain_places)
-            nodes = Node(self.game, transpositionTable, not self.stone, -1, -1, depth+1, None)
+            nodes = Node(self.game, transpositionTable, (not (self.stone - 1)) + 1, -1, -1, depth+1, None)
             move = min_max(nodes, depth)
             if move is None:
                 return None
@@ -43,7 +44,7 @@ class AIPlayer(Player):
             tmp_depth = depth - 1
             while node.parent.parent:
                 if G.DEBUG_ANTICIPATION:
-                    self.game.board.content_desc[node.y][node.x]['debug_txt'] = (str(tmp_depth), STONES[node.board.content[node.y][node.x]])
+                    self.game.board.content_desc[node.y][node.x]['debug_txt'] = (str(tmp_depth), STONES[_at(node.board.content, node.x, node.y) - 1])
                     tmp_depth -= 1
                 node = node.parent
             self.game.board.put_stone(node.x, node.y, self.stone)

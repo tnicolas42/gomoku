@@ -1,6 +1,7 @@
 import time
 import tkinter as tk
 from srcs.utils.utils import complementaryColor
+from srcs.utils.u_board import _at, _set
 from srcs.gui.base_gui import BaseGui
 from tkinter import messagebox
 from srcs.const import *
@@ -140,10 +141,10 @@ class GuiGame(BaseGui):
         # draw stones
         for y in range(G.GET("BOARD_SZ")):
             for x in range(G.GET("BOARD_SZ")):
-                if self.game.board.content[y][x] >= 0:
+                if _at(self.game.board.content, x, y) != STONE_EMPTY:
                     x_win = line_space + line_space * x
                     y_win = line_space + line_space * y
-                    create_args = {'fill': STONES[self.game.board.content[y][x]]}
+                    create_args = {'fill': STONES[_at(self.game.board.content, x, y) - 1]}
                     if self.game.board.content_desc[y][x]['debug_color'] is not None:
                         create_args['outline'] = self.game.board.content_desc[y][x]['debug_color']
                         create_args['width'] = self.w_board_sz // 200

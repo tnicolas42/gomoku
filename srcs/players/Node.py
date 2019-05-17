@@ -2,6 +2,7 @@ from srcs.board import Board, SoftBoard
 from srcs.const import *
 from srcs.players.player import Player
 from srcs.utils.stats import *
+from srcs.utils.u_board import _at, _set
 
 
 class Node():
@@ -19,10 +20,7 @@ class Node():
         self.x = x
         self.y = y
         self.depth = depth
-        if self.parent:
-            parent_content = self.parent.board.content
-        else:
-            parent_content = self.game.board.content
+        parent_content = self.parent.board.content if self.parent else self.game.board.content
         self.board = SoftBoard(self.game, parent_content)
 
         self.childs = []
@@ -33,17 +31,17 @@ class Node():
         testChilds = dict()
         for y in range(G.GET("BOARD_SZ")):
             for x in range(G.GET("BOARD_SZ")):
-                if self.board.content[y][x] is not STONE_EMPTY:
+                if _at(self.board.content, x, y) != STONE_EMPTY:
                     # add the squares arround the curent pos to testChilds
                     for _y in range(y - G.GET("NB_SQUARE_ARROUND"), y + G.GET("NB_SQUARE_ARROUND") + 1):
                         for _x in range(x - G.GET("NB_SQUARE_ARROUND"), x + G.GET("NB_SQUARE_ARROUND") + 1):
-                            if 0 <= _x < G.GET("BOARD_SZ") and 0 <= _y < G.GET("BOARD_SZ") and self.board.content[_y][_x] == STONE_EMPTY:
+                            if 0 <= _x < G.GET("BOARD_SZ") and 0 <= _y < G.GET("BOARD_SZ") and _at(self.board.content, _x, _y) == STONE_EMPTY:
                                 testChilds[(_y, _x)] = True
         tmp = self
         while tmp.parent:
             for _y in range(tmp.y - G.GET("NB_SQUARE_ARROUND"), tmp.y + G.GET("NB_SQUARE_ARROUND") + 1):
                 for _x in range(tmp.x - G.GET("NB_SQUARE_ARROUND"), tmp.x + G.GET("NB_SQUARE_ARROUND") + 1):
-                    if 0 <= _x < G.GET("BOARD_SZ") and 0 <= _y < G.GET("BOARD_SZ") and self.board.content[_y][_x] == STONE_EMPTY:
+                    if 0 <= _x < G.GET("BOARD_SZ") and 0 <= _y < G.GET("BOARD_SZ") and _at(self.board.content, _x, _y) == STONE_EMPTY:
                         testChilds[(_y, _x)] = True
             tmp = tmp.parent
         return testChilds
@@ -57,7 +55,7 @@ class Node():
         for y, x in testChilds:
             if G.DEBUG_SEARCH_ZONE:
                 self.game.board.content_desc[y][x]['debug_marker_color'] = 'red'
-            self.childs.append(Node(self.game, self.transpositionTable, not self.stone, x, y, self.depth - 1, self))
+            self.childs.append(Node(self.game, self.transpositionTable, (not (self.stone - 1)) + 1, x, y, self.depth, self))
 
     # compare function <
     def __lt__(self, other):

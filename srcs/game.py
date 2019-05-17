@@ -37,7 +37,7 @@ class Game(threading.Thread):
         self.board = Board(game=self)
         self.players = []
         for id_, player in enumerate(G.PLAYERS):
-            self.players.append(player_types[player](game=self, stone=id_))
+            self.players.append(player_types[player](game=self, stone=id_ + 1))
         self.reset_game = False
 
     @get_stats

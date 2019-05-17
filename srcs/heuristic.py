@@ -1,4 +1,5 @@
 from srcs.utils.stats import *
+from srcs.utils.u_board import _at, _set
 from srcs.const import *
 
 
@@ -15,29 +16,29 @@ def _check_aligned_dir(game, node, x, y, stone, addx, addy, check_return, multip
     while 1:
         # if out of bound
         if not (0 <= new_x < G.GET("BOARD_SZ") and 0 <= new_y < G.GET("BOARD_SZ")):
-            if node.board.content[new_y - addy][new_x - addx] == STONE_EMPTY:
+            if _at(node.board.content, new_x - addx, new_y - addy) == STONE_EMPTY:
                 free_side[0] = True
             break
         # if player stone
-        elif node.board.content[new_y][new_x] == stone:
+        elif _at(node.board.content, new_x, new_y) == stone:
             nb_almost_aligned += 1
             if nb_hole[0] == 0:
                 nb_aligned += 1
         # if empty
-        elif node.board.content[new_y][new_x] == STONE_EMPTY:
-            if node.board.content[new_y - addy][new_x - addx] == stone:
+        elif _at(node.board.content, new_x, new_y) == STONE_EMPTY:
+            if _at(node.board.content, new_x - addx, new_y - addy) == stone:
                 if nb_hole[0] == 0:
                     nb_hole[0] = 1
                 else:
                     free_side[0] = True
                     break
-            elif node.board.content[new_y - addy][new_x - addx] == STONE_EMPTY:
+            elif _at(node.board.content, new_x - addx, new_y - addy) == STONE_EMPTY:
                 nb_hole[0] = 0
                 free_side[0] = True
                 break
         # if other stone
         else:
-            if node.board.content[new_y - addy][new_x - addx] == STONE_EMPTY:
+            if _at(node.board.content, new_x - addx, new_y - addy) == STONE_EMPTY:
                 nb_hole[0] = 0
                 free_side[0] = True
             break
@@ -48,29 +49,29 @@ def _check_aligned_dir(game, node, x, y, stone, addx, addy, check_return, multip
     while 1:
         # if out of bound
         if not (0 <= new_x < G.GET("BOARD_SZ") and 0 <= new_y < G.GET("BOARD_SZ")):
-            if node.board.content[new_y + addy][new_x + addx] == STONE_EMPTY:
+            if _at(node.board.content, new_x + addx, new_y + addy) == STONE_EMPTY:
                 free_side[0] = True
             break
         # if player stone
-        elif node.board.content[new_y][new_x] == stone:
+        elif _at(node.board.content, new_x, new_y) == stone:
             nb_almost_aligned += 1
             if nb_hole[1] == 0:
                 nb_aligned += 1
         # if empty
-        elif node.board.content[new_y][new_x] == STONE_EMPTY:
-            if node.board.content[new_y + addy][new_x + addx] == stone:
+        elif _at(node.board.content, new_x, new_y) == STONE_EMPTY:
+            if _at(node.board.content, new_x + addx, new_y + addy) == stone:
                 if nb_hole[1] == 0:
                     nb_hole[1] = 1
                 else:
                     free_side[1] = True
                     break
-            elif node.board.content[new_y + addy][new_x + addx] == STONE_EMPTY:
+            elif _at(node.board.content, new_x + addx, new_y + addy) == STONE_EMPTY:
                 nb_hole[1] = 0
                 free_side[1] = True
                 break
         # if other stone
         else:
-            if node.board.content[new_y + addy][new_x + addx] == STONE_EMPTY:
+            if _at(node.board.content, new_x + addx, new_y + addy) == STONE_EMPTY:
                 nb_hole[1] = 0
                 free_side[1] = True
             break
@@ -110,15 +111,15 @@ def _check_stone(game, node, x, y, check_return, multiplier=1):
         the nb of win
         the number of vulnerability
     """
-    stone = node.board.content[y][x]
+    stone = _at(node.board.content, x, y)
     if stone == STONE_EMPTY:
         return
 
     if node.board.check_vulnerability(x, y):
         mul = 1
-        if game.players[stone].destroyed_stones_count + 2 >= G.GET("STONES_DESTROYED_VICTORY"):
+        if game.players[stone-1].destroyed_stones_count + 2 >= G.GET("STONES_DESTROYED_VICTORY"):
             mul = G.GET("H_SELECT_DESTROY_VICTORY_ADDER")
-        check_return['nb_vulnerable'] += mul * (game.players[stone].destroyed_stones_count + 1) * multiplier * (G.GET("H_POSITIVE_MULTIPLIER") if game.id_player_act == stone else G.GET("H_NEGATIVE_MULTIPLIER"))
+        check_return['nb_vulnerable'] += mul * (game.players[stone-1].destroyed_stones_count + 1) * multiplier * (G.GET("H_POSITIVE_MULTIPLIER") if game.id_player_act == stone else G.GET("H_NEGATIVE_MULTIPLIER"))
     _check_aligned_dir(game, node, x, y, stone, -1, 0, check_return, multiplier=multiplier)
     _check_aligned_dir(game, node, x, y, stone, 0, 1, check_return, multiplier=multiplier)
     _check_aligned_dir(game, node, x, y, stone, 1, 1, check_return, multiplier=multiplier)
@@ -167,11 +168,11 @@ def selective_heuristic(node, printDebug=False):
             mul = ((lenhist+1)>>1) - (i>>1) + 1
             if nb_destroyed > 0:
                 mul = 1
-                if game.players[stone].destroyed_stones_count + nb_destroyed >= G.GET("STONES_DESTROYED_VICTORY"):
+                if game.players[stone-1].destroyed_stones_count + nb_destroyed >= G.GET("STONES_DESTROYED_VICTORY"):
                     mul = G.GET("H_SELECT_DESTROY_VICTORY_ADDER")
                     if game.id_player_act == stone:
                         node.is_win = True
-                check_return['nb_destroyed'] += mul * (game.players[stone].destroyed_stones_count + 1) * mul * nb_destroyed * (G.GET("H_POSITIVE_MULTIPLIER") if game.id_player_act == stone else G.GET("H_NEGATIVE_MULTIPLIER"))
+                check_return['nb_destroyed'] += mul * (game.players[stone-1].destroyed_stones_count + 1) * mul * nb_destroyed * (G.GET("H_POSITIVE_MULTIPLIER") if game.id_player_act == stone else G.GET("H_NEGATIVE_MULTIPLIER"))
             _check_stone(game, node, x, y, check_return,
                         multiplier=mul)
         else:

@@ -1,7 +1,7 @@
 import srcs.utils.color as c
 
 # value for empty stones
-STONE_EMPTY = -1
+STONE_EMPTY = 0
 
 # color for all stones (the max number of players is len(STONES))
 STONES = (
