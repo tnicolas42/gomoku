@@ -9,9 +9,8 @@ class Node():
     this function store a possible move for the ai minMax algorithm
     """
     def __repr__(self):
-        return '(' + str(self.x) + ':' + str(self.y) + ')'
+        return '(' + str(self.x) + ':' + str(self.y) + '->' + str(self.heuristic) + ')'
 
-    @get_stats
     def __init__(self, game, transpositionTable, stone, x, y, depth, parent=None):
         self.game = game
         self.transpositionTable = transpositionTable
@@ -27,28 +26,29 @@ class Node():
         self.board = SoftBoard(self.game, parent_content)
 
         self.childs = []
+        self.heuristic = None
+        self.is_win = False
 
-    @get_stats
     def get_childs_coord(self):
         testChilds = dict()
-        for y in range(G.BOARD_SZ):
-            for x in range(G.BOARD_SZ):
+        for y in range(G.GET("BOARD_SZ")):
+            for x in range(G.GET("BOARD_SZ")):
                 if self.board.content[y][x] is not STONE_EMPTY:
                     # add the squares arround the curent pos to testChilds
-                    for _y in range(y - G.NB_SQUARE_ARROUND, y + G.NB_SQUARE_ARROUND + 1):
-                        for _x in range(x - G.NB_SQUARE_ARROUND, x + G.NB_SQUARE_ARROUND + 1):
-                            if 0 <= _x < G.BOARD_SZ and 0 <= _y < G.BOARD_SZ and self.board.content[_y][_x] == STONE_EMPTY:
+                    for _y in range(y - G.GET("NB_SQUARE_ARROUND"), y + G.GET("NB_SQUARE_ARROUND") + 1):
+                        for _x in range(x - G.GET("NB_SQUARE_ARROUND"), x + G.GET("NB_SQUARE_ARROUND") + 1):
+                            if 0 <= _x < G.GET("BOARD_SZ") and 0 <= _y < G.GET("BOARD_SZ") and self.board.content[_y][_x] == STONE_EMPTY:
                                 testChilds[(_y, _x)] = True
         tmp = self
         while tmp.parent:
-            for _y in range(tmp.y - G.NB_SQUARE_ARROUND, tmp.y + G.NB_SQUARE_ARROUND + 1):
-                for _x in range(tmp.x - G.NB_SQUARE_ARROUND, tmp.x + G.NB_SQUARE_ARROUND + 1):
-                    if 0 <= _x < G.BOARD_SZ and 0 <= _y < G.BOARD_SZ and self.board.content[_y][_x] == STONE_EMPTY:
+            for _y in range(tmp.y - G.GET("NB_SQUARE_ARROUND"), tmp.y + G.GET("NB_SQUARE_ARROUND") + 1):
+                for _x in range(tmp.x - G.GET("NB_SQUARE_ARROUND"), tmp.x + G.GET("NB_SQUARE_ARROUND") + 1):
+                    if 0 <= _x < G.GET("BOARD_SZ") and 0 <= _y < G.GET("BOARD_SZ") and self.board.content[_y][_x] == STONE_EMPTY:
                         testChilds[(_y, _x)] = True
             tmp = tmp.parent
         return testChilds
 
-    @get_stats_and_mark()
+    @get_stats
     def setChilds(self):
         testChilds = self.get_childs_coord()
 
@@ -59,3 +59,34 @@ class Node():
                 self.game.board.content_desc[y][x]['debug_marker_color'] = 'red'
             self.childs.append(Node(self.game, self.transpositionTable, not self.stone, x, y, self.depth - 1, self))
 
+    # compare function <
+    def __lt__(self, other):
+        if self.heuristic == None:
+            return False
+        elif other.heuristic == None:
+            return True
+        return self.heuristic < other.heuristic
+
+    # compare function <=
+    def __le__(self, other):
+        if self.heuristic == None:
+            return False
+        elif other.heuristic == None:
+            return True
+        return self.heuristic <= other.heuristic
+
+    # compare function >=
+    def __ge__(self, other):
+        if self.heuristic == None:
+            return False
+        elif other.heuristic == None:
+            return True
+        return self.heuristic >= other.heuristic
+
+    # compare function >
+    def __gt__(self, other):
+        if self.heuristic == None:
+            return False
+        elif other.heuristic == None:
+            return True
+        return self.heuristic > other.heuristic

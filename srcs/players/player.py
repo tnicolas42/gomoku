@@ -8,6 +8,7 @@ class Player(object):
     this is the parent object of all players types (REAL, AI)
     there is one Player object foreach players
     """
+    type_ = "REAL"
     game = None  # the game object
     stone = None  # the stone -> int from 0 to n
     destroyed_stones_count = 0  # number of destroyed stones
@@ -18,11 +19,19 @@ class Player(object):
     clicked_pos = [0, 0]
     time_last_move = 0.0
 
+    ai_waiting_space = G.SPACE_BEFORE_AI_PLAY
+
     def __init__(self, game, stone):
         self.game = game
         self.stone = stone
 
     def moving(self):
+        if G.SPACE_BEFORE_AI_PLAY and self.type_ == "AI":
+            self.ai_waiting_space = True
+            while self.ai_waiting_space and not self.game.reset_game and not self.game.quit:
+                time.sleep(0.1)
+            if self.game.reset_game or self.game.quit:
+                return None
         before = time.time()
         ret = self.move()
         self.time_last_move = time.time() - before
@@ -47,10 +56,10 @@ class Player(object):
         return True if the player win
         """
         if self.is_win_aligned:
-            print("win with %d or more stones aligned" % (G.NB_ALIGNED_VICTORY))
+            print("win with %d or more stones aligned" % (G.GET("NB_ALIGNED_VICTORY")))
             return True
 
-        if self.destroyed_stones_count >= G.STONES_DESTROYED_VICTORY:
+        if self.destroyed_stones_count >= G.GET("STONES_DESTROYED_VICTORY"):
             print("win because %d stones destroyed" % (self.destroyed_stones_count))
             return True
 

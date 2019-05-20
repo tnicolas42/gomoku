@@ -10,10 +10,12 @@ class GuiMenu(BaseGui):
     nb_players = None
     playerAICheck = [None, None]
     playerAI = [None, None]
-    depth_scale = None
-    depth = None
+    dificulty_scale = None
+    dificulty = None
     show_vul_check = None
     show_vul = None
+    sp_before_play_check = None
+    sp_before_play = None
     validateButton = None
 
     def __init__(self, game, gui):
@@ -21,8 +23,9 @@ class GuiMenu(BaseGui):
         self.size_board = tk.IntVar()
         self.nb_players = tk.IntVar()
         self.playerAI = [tk.BooleanVar(), tk.BooleanVar()]
-        self.depth = tk.IntVar()
+        self.dificulty = tk.IntVar()
         self.show_vul = tk.BooleanVar()
+        self.sp_before_play = tk.BooleanVar()
 
     def keyPress(self, e):
         if e.keysym == "Return":
@@ -48,11 +51,11 @@ class GuiMenu(BaseGui):
                                          label="size of the board (default: 19x19)",
                                          variable=self.size_board,
                                          **scale_args)
-        self.size_board_scale.set(G.BOARD_SZ)
+        self.size_board_scale.set(G.GET("BOARD_SZ"))
         self.size_board_scale.pack(pady=3)
 
-        self.nb_players_scale = tk.Scale(self, from_=2, to=8,
-                                         label="number of players (if > 2 you can't use AI)",
+        self.nb_players_scale = tk.Scale(self, from_=1, to=8,
+                                         label="number of players (if not 2 you can't use AI)",
                                          variable=self.nb_players,
                                          **scale_args)
         self.nb_players_scale.set(len(G.PLAYERS))
@@ -78,12 +81,12 @@ class GuiMenu(BaseGui):
             self.playerAICheck[1].deselect()
         self.playerAICheck[1].pack()
 
-        self.depth_scale = tk.Scale(self, from_=1, to=15,
-                                    label="depth",
-                                    variable=self.depth,
+        self.dificulty_scale = tk.Scale(self, from_=0, to=len(G.DIFICULTY_LEVEL)-1,
+                                    label="dificulty",
+                                    variable=self.dificulty,
                                     **scale_args)
-        self.depth_scale.set(G.DEPTH)
-        self.depth_scale.pack()
+        self.dificulty_scale.set(G.DIFICULTY)
+        self.dificulty_scale.pack()
 
         self.show_vul_check = tk.Checkbutton(self,
                                              variable=self.show_vul,
@@ -94,6 +97,16 @@ class GuiMenu(BaseGui):
         else:
             self.show_vul_check.deselect()
         self.show_vul_check.pack()
+
+        self.sp_before_play_check = tk.Checkbutton(self,
+                                             variable=self.sp_before_play,
+                                             text="press space before AI can play",
+                                             **check_args)
+        if G.SPACE_BEFORE_AI_PLAY:
+            self.sp_before_play_check.select()
+        else:
+            self.sp_before_play_check.deselect()
+        self.sp_before_play_check.pack()
 
         self.create_text(int(self.gui.w_width * 0.5),
                          int(self.gui.w_height * 0.9),
@@ -114,10 +127,11 @@ class GuiMenu(BaseGui):
         self.gui.openGame()
 
     def before_quit(self):
-        G.BOARD_SZ = self.size_board.get()
+        G.SET("BOARD_SZ", self.size_board.get())
         G.PLAYERS = ["REAL" for i in range(self.nb_players.get())]
         for i, plAI in enumerate(self.playerAI):
             if plAI.get() == True:
                 G.PLAYERS[i] = "AI"
-        G.DEPTH = self.depth.get()
+        G.DIFICULTY = self.dificulty.get()
         G.SHOW_VULNERABILITY = self.show_vul.get()
+        G.SPACE_BEFORE_AI_PLAY = self.sp_before_play.get()

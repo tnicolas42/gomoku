@@ -34,10 +34,10 @@ class GuiGame(BaseGui):
         called when the mouse click on the board canvas
         get the position of the intersection under cursor and update update the player
         """
-        line_space = self.w_board_sz / (G.BOARD_SZ + 1)
+        line_space = self.w_board_sz / (G.GET("BOARD_SZ") + 1)
         x = (event.x - (line_space / 2)) / line_space
         y = (event.y - (line_space / 2)) / line_space
-        if x >= G.BOARD_SZ or y >= G.BOARD_SZ or \
+        if x >= G.GET("BOARD_SZ") or y >= G.GET("BOARD_SZ") or \
                 event.x < line_space / 2 or event.y < line_space / 2:
             return
         # tell to the actual player that we click on this position
@@ -46,6 +46,9 @@ class GuiGame(BaseGui):
     def keyPress(self, e):
         if e.keysym in ("BackSpace", "Delete"):
             self.game.board.reset_debug()
+        elif e.keysym == "space":
+            if G.SPACE_BEFORE_AI_PLAY:
+                self.game.players[self.game.id_player_act].ai_waiting_space = False
         # elif e.keysym == "Return":
         #     win = False
         #     for p in self.game.players:
@@ -95,7 +98,7 @@ class GuiGame(BaseGui):
                     int(self.w_width_left * 0.5),
                     int(self.w_board_sz / len(self.game.players) * id_pl + self.w_board_sz / len(self.game.players) * 0.3),
                     fill=complementaryColor(STONES[id_pl]), font="Times %d italic bold" % (self.w_width_left * 0.1),
-                    text="Capture: %d/%d" % (self.game.players[id_pl].destroyed_stones_count, G.STONES_DESTROYED_VICTORY))
+                    text="Capture: %d/%d" % (self.game.players[id_pl].destroyed_stones_count, G.GET("STONES_DESTROYED_VICTORY")))
                 self.left_canvas.create_text(
                     int(self.w_width_left * 0.5),
                     int(self.w_board_sz / len(self.game.players) * id_pl + self.w_board_sz / len(self.game.players) * 0.45),
@@ -111,32 +114,32 @@ class GuiGame(BaseGui):
         self.board_canvas.create_rectangle(0, 0, self.w_board_sz, self.w_board_sz, fill=BG_COLOR)
 
         # create lines an cols
-        line_space = self.w_board_sz / (G.BOARD_SZ + 1)  # space btw 2 lines
+        line_space = self.w_board_sz / (G.GET("BOARD_SZ") + 1)  # space btw 2 lines
         line_width = max(1, line_space / 10)
         x1 = line_space
         x2 = self.w_board_sz - line_space
-        for i in range(G.BOARD_SZ):
+        for i in range(G.GET("BOARD_SZ")):
             y1 = line_space + line_space * i
             y2 = y1
             self.board_canvas.create_line(int(x1), int(y1), int(x2), int(y2), fill="black", width=line_width)
 
         y1 = line_space
         y2 = self.w_board_sz - line_space
-        for i in range(G.BOARD_SZ):
+        for i in range(G.GET("BOARD_SZ")):
             x1 = line_space + line_space * i
             x2 = x1
             self.board_canvas.create_line(int(x1), int(y1), int(x2), int(y2), fill="black", width=line_width)
 
         # add point
-        for x in range(G.BOARD_SZ // 2 % 6, G.BOARD_SZ, 6):
-            for y in range(G.BOARD_SZ // 2 % 6, G.BOARD_SZ, 6):
+        for x in range(G.GET("BOARD_SZ") // 2 % 6, G.GET("BOARD_SZ"), 6):
+            for y in range(G.GET("BOARD_SZ") // 2 % 6, G.GET("BOARD_SZ"), 6):
                 x_win = line_space + line_space * x
                 y_win = line_space + line_space * y
                 self.board_canvas.create_circle(int(x_win), int(y_win), int(line_space * 0.15), fill='black')
 
         # draw stones
-        for y in range(G.BOARD_SZ):
-            for x in range(G.BOARD_SZ):
+        for y in range(G.GET("BOARD_SZ")):
+            for x in range(G.GET("BOARD_SZ")):
                 if self.game.board.content[y][x] >= 0:
                     x_win = line_space + line_space * x
                     y_win = line_space + line_space * y
@@ -176,3 +179,16 @@ class GuiGame(BaseGui):
                     self.board_canvas.create_line(int(x_win + line_space * 0.4), int(y_win - line_space * 0.4),
                                                     int(x_win - line_space * 0.4), int(y_win + line_space * 0.4),
                                                     **cross_line_args)
+                if self.game.board.content_desc[y][x]['debug_txt'] is not None:
+                    x_win = line_space + line_space * x
+                    y_win = line_space + line_space * y
+                    self.board_canvas.create_text(int(x_win),
+                                                 int(y_win),
+                                                 fill=complementaryColor(self.game.board.content_desc[y][x]['debug_txt'][1]),
+                                                 font="Times %d bold" % (self.w_width_left * 0.14),
+                                                 text=self.game.board.content_desc[y][x]['debug_txt'][0])
+                    self.board_canvas.create_text(int(x_win),
+                                                 int(y_win),
+                                                 fill=self.game.board.content_desc[y][x]['debug_txt'][1],
+                                                 font="Times %d" % (self.w_width_left * 0.14),
+                                                 text=self.game.board.content_desc[y][x]['debug_txt'][0])

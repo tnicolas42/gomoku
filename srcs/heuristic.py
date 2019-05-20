@@ -14,7 +14,7 @@ def _check_aligned_dir(game, node, x, y, stone, addx, addy, check_return, multip
     new_y = y + addy
     while 1:
         # if out of bound
-        if not (0 <= new_x < G.BOARD_SZ and 0 <= new_y < G.BOARD_SZ):
+        if not (0 <= new_x < G.GET("BOARD_SZ") and 0 <= new_y < G.GET("BOARD_SZ")):
             if node.board.content[new_y - addy][new_x - addx] == STONE_EMPTY:
                 free_side[0] = True
             break
@@ -47,7 +47,7 @@ def _check_aligned_dir(game, node, x, y, stone, addx, addy, check_return, multip
     new_y = y - addy
     while 1:
         # if out of bound
-        if not (0 <= new_x < G.BOARD_SZ and 0 <= new_y < G.BOARD_SZ):
+        if not (0 <= new_x < G.GET("BOARD_SZ") and 0 <= new_y < G.GET("BOARD_SZ")):
             if node.board.content[new_y + addy][new_x + addx] == STONE_EMPTY:
                 free_side[0] = True
             break
@@ -77,28 +77,30 @@ def _check_aligned_dir(game, node, x, y, stone, addx, addy, check_return, multip
         new_x -= addx
         new_y -= addy
 
-    if nb_aligned >= G.NB_ALIGNED_VICTORY:  # AAAAA
-        check_return['nb_win'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
+    if nb_aligned >= G.GET("NB_ALIGNED_VICTORY"):  # AAAAA
+        if game.id_player_act == stone:
+            node.is_win = True
+        check_return['nb_win'] += multiplier * (G.GET("H_POSITIVE_MULTIPLIER") if game.id_player_act == stone else G.GET("H_NEGATIVE_MULTIPLIER"))
     elif nb_aligned >= 4:
         if free_side[0] + free_side[1] == 2:  # .AAAA.
-            check_return['nb_free_four'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
+            check_return['nb_free_four'] += multiplier * (G.GET("H_POSITIVE_MULTIPLIER") if game.id_player_act == stone else G.GET("H_NEGATIVE_MULTIPLIER"))
         elif free_side[0] + free_side[1] == 1:  # BAAAA.
-            check_return['nb_four'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
+            check_return['nb_four'] += multiplier * (G.GET("H_POSITIVE_MULTIPLIER") if game.id_player_act == stone else G.GET("H_NEGATIVE_MULTIPLIER"))
     elif nb_aligned >= 3:
         if free_side[0] + free_side[1] == 2:  # .AAA.
-            check_return['nb_free_three'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
+            check_return['nb_free_three'] += multiplier * (G.GET("H_POSITIVE_MULTIPLIER") if game.id_player_act == stone else G.GET("H_NEGATIVE_MULTIPLIER"))
         elif free_side[0] + free_side[1] == 1:  # BAAA.
-            check_return['nb_three'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
+            check_return['nb_three'] += multiplier * (G.GET("H_POSITIVE_MULTIPLIER") if game.id_player_act == stone else G.GET("H_NEGATIVE_MULTIPLIER"))
     elif nb_aligned >= 2:
         if free_side[0] + free_side[1] == 2:  # .AA.
-            check_return['nb_free_two'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
+            check_return['nb_free_two'] += multiplier * (G.GET("H_POSITIVE_MULTIPLIER") if game.id_player_act == stone else G.GET("H_NEGATIVE_MULTIPLIER"))
         elif free_side[0] + free_side[1] == 1:  # BAA.
-            check_return['nb_two'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
+            check_return['nb_two'] += multiplier * (G.GET("H_POSITIVE_MULTIPLIER") if game.id_player_act == stone else G.GET("H_NEGATIVE_MULTIPLIER"))
     elif nb_almost_aligned >= 4:  # AA.AA  AAA.AA
-        check_return['nb_four'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
+        check_return['nb_four'] += multiplier * (G.GET("H_POSITIVE_MULTIPLIER") if game.id_player_act == stone else G.GET("H_NEGATIVE_MULTIPLIER"))
     elif nb_almost_aligned == 3:
         if free_side[0] + free_side[1] == 2:  # .A.AA.  .AAA.
-            check_return['nb_free_three'] += multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
+            check_return['nb_free_three'] += multiplier * (G.GET("H_POSITIVE_MULTIPLIER") if game.id_player_act == stone else G.GET("H_NEGATIVE_MULTIPLIER"))
 
 def _check_stone(game, node, x, y, check_return, multiplier=1):
     """
@@ -114,9 +116,9 @@ def _check_stone(game, node, x, y, check_return, multiplier=1):
 
     if node.board.check_vulnerability(x, y):
         mul = 1
-        if game.players[stone].destroyed_stones_count + 2 >= G.STONES_DESTROYED_VICTORY:
-            mul = G.H_SELECT_DESTROY_VICTORY_ADDER
-        check_return['nb_vulnerable'] += mul * (game.players[stone].destroyed_stones_count + 1) * multiplier * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
+        if game.players[stone].destroyed_stones_count + 2 >= G.GET("STONES_DESTROYED_VICTORY"):
+            mul = G.GET("H_SELECT_DESTROY_VICTORY_ADDER")
+        check_return['nb_vulnerable'] += mul * (game.players[stone].destroyed_stones_count + 1) * multiplier * (G.GET("H_POSITIVE_MULTIPLIER") if game.id_player_act == stone else G.GET("H_NEGATIVE_MULTIPLIER"))
     _check_aligned_dir(game, node, x, y, stone, -1, 0, check_return, multiplier=multiplier)
     _check_aligned_dir(game, node, x, y, stone, 0, 1, check_return, multiplier=multiplier)
     _check_aligned_dir(game, node, x, y, stone, 1, 1, check_return, multiplier=multiplier)
@@ -131,6 +133,9 @@ def selective_heuristic(node, printDebug=False):
     """
     calc the heuristic with particular attention with the ordered posed stones
     """
+    if node.heuristic is not None:
+        return node.heuristic
+
     game = node.game
     check_return = dict(
         nb_two=0,
@@ -148,19 +153,25 @@ def selective_heuristic(node, printDebug=False):
     tmp = node
     while tmp.parent:
         node_hist.append((tmp.x, tmp.y, int(tmp.stone)))
+        tmp.is_stone_on_board = True
+        if G.GET("ENABLE_KEEP_NODE_PERCENT"):
+            break
         tmp = tmp.parent
 
-    node_hist.reverse()
     lenhist = len(node_hist)
+    if lenhist > 1:
+        node_hist.reverse()
     for i, (x, y, stone) in enumerate(node_hist):
         if node.board.is_allowed(x, y, stone):
             nb_destroyed = node.board.put_stone(x, y, stone, test=True)
             mul = ((lenhist+1)>>1) - (i>>1) + 1
             if nb_destroyed > 0:
                 mul = 1
-                if game.players[stone].destroyed_stones_count + nb_destroyed >= G.STONES_DESTROYED_VICTORY:
-                    mul = G.H_SELECT_DESTROY_VICTORY_ADDER
-                check_return['nb_destroyed'] += mul * (game.players[stone].destroyed_stones_count + 1) * mul * nb_destroyed * (G.H_POSITIVE_MULTIPLIER if game.id_player_act == stone else G.H_NEGATIVE_MULTIPLIER)
+                if game.players[stone].destroyed_stones_count + nb_destroyed >= G.GET("STONES_DESTROYED_VICTORY"):
+                    mul = G.GET("H_SELECT_DESTROY_VICTORY_ADDER")
+                    if game.id_player_act == stone:
+                        node.is_win = True
+                check_return['nb_destroyed'] += mul * (game.players[stone].destroyed_stones_count + 1) * mul * nb_destroyed * (G.GET("H_POSITIVE_MULTIPLIER") if game.id_player_act == stone else G.GET("H_NEGATIVE_MULTIPLIER"))
             _check_stone(game, node, x, y, check_return,
                         multiplier=mul)
         else:
@@ -170,8 +181,8 @@ def selective_heuristic(node, printDebug=False):
     if hash_node in node.transpositionTable:
         check_return = node.transpositionTable[hash_node]
     else:
-        for x in range(G.BOARD_SZ):
-            for y in range(G.BOARD_SZ):
+        for x in range(G.GET("BOARD_SZ")):
+            for y in range(G.GET("BOARD_SZ")):
                 _check_stone(game, node, x, y, check_return)
 
     if hash_node not in node.transpositionTable:
@@ -191,15 +202,15 @@ def selective_heuristic(node, printDebug=False):
         print()
 
     # apply a value
-    check_return['nb_two'] *= G.H_SELECT_TWO
-    check_return['nb_free_two'] *= G.H_SELECT_FREE_TWO
-    check_return['nb_three'] *= G.H_SELECT_THREE
-    check_return['nb_free_three'] *= G.H_SELECT_FREE_THREE
-    check_return['nb_free_four'] *= G.H_SELECT_FREE_FOUR
-    check_return['nb_four'] *= G.H_SELECT_FOUR
-    check_return['nb_win'] *= G.H_SELECT_WIN
-    check_return['nb_vulnerable'] *= G.H_SELECT_VULNERABLILITY
-    check_return['nb_destroyed'] *= G.H_SELECT_DESTROYED
+    check_return['nb_two'] *= G.GET("H_SELECT_TWO")
+    check_return['nb_free_two'] *= G.GET("H_SELECT_FREE_TWO")
+    check_return['nb_three'] *= G.GET("H_SELECT_THREE")
+    check_return['nb_free_three'] *= G.GET("H_SELECT_FREE_THREE")
+    check_return['nb_free_four'] *= G.GET("H_SELECT_FREE_FOUR")
+    check_return['nb_four'] *= G.GET("H_SELECT_FOUR")
+    check_return['nb_win'] *= G.GET("H_SELECT_WIN")
+    check_return['nb_vulnerable'] *= G.GET("H_SELECT_VULNERABLILITY")
+    check_return['nb_destroyed'] *= G.GET("H_SELECT_DESTROYED")
 
     val = 0
     for k in check_return:
@@ -207,8 +218,9 @@ def selective_heuristic(node, printDebug=False):
     return val
 
 
-@get_stats_and_mark()
+@get_stats
 def get_heuristic(node, printDebug=False):
     val = selective_heuristic(node, printDebug=printDebug)
 
+    node.heuristic = val
     return val

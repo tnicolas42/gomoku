@@ -1,5 +1,0 @@
-in the check of aligned stones (board.py)
-	- add a check to know if we can destroy a stone in the alignement
-
-in is_allowed function (board.py)
-	- check the free-threes

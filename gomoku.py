@@ -13,10 +13,10 @@ if __name__ == '__main__':
     parser.add_argument('--players', type=str, choices=player_types.keys(), nargs='+', required=False, default=G.PLAYERS,
                             help="this is the players list (--players AI REAL ...) -> max %d players" % (len(STONES)))
 
-    parser.add_argument('--board-size', type=int, default=G.BOARD_SZ, choices=range(1,51), metavar="[1-50]",
+    parser.add_argument('--board-size', type=int, default=G.GET("BOARD_SZ"), choices=range(1,51), metavar="[1-50]",
                             help="this is the size of the board")
-    parser.add_argument('--depth', type=int, default=G.DEPTH, choices=range(1,16), metavar="[1-15]",
-                            help="this is the depth of the algorithm")
+    parser.add_argument('--dificulty', type=int, default=G.DIFICULTY, choices=range(0,len(G.DIFICULTY_LEVEL)), metavar="[0-%d]" % (len(G.DIFICULTY_LEVEL)-1),
+                            help="this is the dificulty level")
 
     parser.add_argument("--w-size-percent", type=int, default=80, choices=range(30,101), metavar="[30-100]",
                         help="Size of the gui windows (percentage of computer height)")
@@ -38,8 +38,8 @@ if __name__ == '__main__':
         exit(1)
     EnableStats.enable = args.stats
 
-    G.BOARD_SZ = args.board_size
-    G.DEPTH = args.depth
+    G.DIFICULTY = args.dificulty
+    G.SET("BOARD_SZ", args.board_size)
     G.ASK_VALIDATION = args.skip_validations
     G.SHOW_VULNERABILITY = args.show_vulnerability
     if len(args.players) >= 2:
