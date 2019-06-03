@@ -11,7 +11,7 @@ class Node():
     def __repr__(self):
         return '(' + str(self.x) + ':' + str(self.y) + '->' + str(self.heuristic) + ')'
 
-    def __init__(self, game, transpositionTable, stone, x, y, depth, parent=None):
+    def __init__(self, game, transpositionTable, stone, depth, x=-1, y=-1, parent=None):
         self.game = game
         self.transpositionTable = transpositionTable
         self.parent = parent
@@ -20,18 +20,23 @@ class Node():
         self.y = y
         self.depth = depth
         if self.parent:
-            parent_content = self.parent.board.content
-            self.child_coord = self.parent.child_coord
+            self.board = self.parent.board
+            self.childs_test_coord = self.parent.childs_test_coord
         else:
-            parent_content = self.game.board.content
-            self.child_coord = dict()
-        self.board = SoftBoard(self.game, parent_content)
-        if not self.parent:
-            self.init_child_coord()
+            self.board = SoftBoard(self.game, self.game.board.content)
+            self.childs_test_coord = dict()
+        self.changes = [[self.x, self.y, STONE_EMPTY]]
 
         self.childs = []
         self.heuristic = None
         self.is_win = False
+
+    def reset_board(self):
+        node = self
+        while node.parent:
+            for x, y, stone in node.changes:
+                node.board.content[y][x] = stone
+            node = node.parent
 
     def init_child_coord(self):
         self.child_coord = dict()
@@ -60,12 +65,6 @@ class Node():
 
         for y, x in self.child_coord:
             if (y, x) in dontTest:
-                continue
-            if G.DEBUG_SEARCH_ZONE:
-                self.game.board.content_desc[y][x]['debug_marker_color'] = 'red'
-            self.childs.append(Node(self.game, self.transpositionTable, not self.stone, x, y, self.depth - 1, self))
-        for y, x in testChilds:
-            if (y, x) in dontTest or (y, x) in self.child_coord:
                 continue
             if G.DEBUG_SEARCH_ZONE:
                 self.game.board.content_desc[y][x]['debug_marker_color'] = 'red'

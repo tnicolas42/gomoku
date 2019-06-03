@@ -20,7 +20,7 @@ class AIPlayer(Player):
         Player.__init__(self, *args, **kwargs)
         self.type_ = "AI"
 
-    @set_marker(aftertxt="")
+    @set_marker()
     @get_stats_and_mark()
     def move(self):
         """
@@ -35,7 +35,7 @@ class AIPlayer(Player):
         else:
             transpositionTable = {}
             depth = min(G.GET("DEPTH"), self.game.board.remain_places)
-            nodes = Node(self.game, transpositionTable, not self.stone, -1, -1, depth+1, None)
+            nodes = Node(self.game, transpositionTable, not self.stone, depth+1)
             move = min_max(nodes, depth)
             if move is None:
                 return None

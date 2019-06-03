@@ -163,9 +163,12 @@ def selective_heuristic(node, printDebug=False):
         node_hist.reverse()
     for i, (x, y, stone) in enumerate(node_hist):
         if node.board.is_allowed(x, y, stone):
-            nb_destroyed = node.board.put_stone(x, y, stone, test=True)
+            destroyed = node.board.put_stone(x, y, stone, test=True)
+            nb_destroyed = len(destroyed)
             mul = ((lenhist+1)>>1) - (i>>1) + 1
             if nb_destroyed > 0:
+                for destroy_x, destroy_y in destroyed:
+                    node.changes.append([destroy_x, destroy_y, not node.stone])
                 mul = 1
                 if game.players[stone].destroyed_stones_count + nb_destroyed >= G.GET("STONES_DESTROYED_VICTORY"):
                     mul = G.GET("H_SELECT_DESTROY_VICTORY_ADDER")
@@ -175,6 +178,7 @@ def selective_heuristic(node, printDebug=False):
             _check_stone(game, node, x, y, check_return,
                         multiplier=mul)
         else:
+            node.reset_board()
             return None
 
     hash_node = get_hash(node)
@@ -215,6 +219,8 @@ def selective_heuristic(node, printDebug=False):
     val = 0
     for k in check_return:
         val += check_return[k]
+
+    node.reset_board()
     return val
 
 

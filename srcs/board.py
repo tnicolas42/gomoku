@@ -267,7 +267,7 @@ class SoftBoard(object):
             # check aif there is a winner
             self.check_winner()
 
-        return len(destroyed)
+        return destroyed
 
     def _is_free_three_dir(self, x, y, stone, addx, addy):
         """
