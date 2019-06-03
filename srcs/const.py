@@ -45,7 +45,7 @@ class G:  # class with all global variables
         KEEP_NODE_PERCENT = 0.2,  # the percentage of node to keep (in minmax algo)
         MIN_KEEP_NODE = 3,  # keep at least MIN_KEEP_NODE nodes (if the percentage return less than MIN_KEEP_NODE)
         USE_MAX_KEEP_NODE = True,  # if True, use MAX_KEEP_NODE, else... no limit !
-        MAX_KEEP_NODE = 7,  # keep max MAX_KEEP_NODE nodes (if the percentage return more than MAX_KEEP_NODE)
+        MAX_KEEP_NODE = 4,  # keep max MAX_KEEP_NODE nodes (if the percentage return more than MAX_KEEP_NODE)
 
         # used to count more the positive or negative action in heuristic
         H_POSITIVE_MULTIPLIER = 1,  # positive number
