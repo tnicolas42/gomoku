@@ -66,13 +66,14 @@ class G:  # class with all global variables
     )
     DIFICULTY_LEVEL = [  # from easyer to harder
         dict(  # easy mode
+            DEPTH = 1,
+            H_NEGATIVE_MULTIPLIER = -2,
+        ),
+        dict(  # normal mode
             DEPTH = 2,
             H_SELECT_VULNERABLILITY = 0,
             H_SELECT_DESTROYED = 0,
             H_SELECT_DESTROY_VICTORY_ADDER = 0,
-        ),
-        dict(  # normal mode
-            DEPTH = 2,
         ),
         dict(),  # hard mode (same as default)
     ]
