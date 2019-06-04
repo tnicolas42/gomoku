@@ -21,16 +21,20 @@ class Node():
         self.depth = depth
         if self.parent:
             parent_content = self.parent.board.content
+            self.child_coord = self.parent.child_coord
         else:
             parent_content = self.game.board.content
+            self.child_coord = dict()
         self.board = SoftBoard(self.game, parent_content)
+        if not self.parent:
+            self.init_child_coord()
 
         self.childs = []
         self.heuristic = None
         self.is_win = False
 
-    def get_childs_coord(self):
-        testChilds = dict()
+    def init_child_coord(self):
+        self.child_coord = dict()
         for y in range(G.GET("BOARD_SZ")):
             for x in range(G.GET("BOARD_SZ")):
                 if self.board.content[y][x] is not STONE_EMPTY:
@@ -38,23 +42,31 @@ class Node():
                     for _y in range(y - G.GET("NB_SQUARE_ARROUND"), y + G.GET("NB_SQUARE_ARROUND") + 1):
                         for _x in range(x - G.GET("NB_SQUARE_ARROUND"), x + G.GET("NB_SQUARE_ARROUND") + 1):
                             if 0 <= _x < G.GET("BOARD_SZ") and 0 <= _y < G.GET("BOARD_SZ") and self.board.content[_y][_x] == STONE_EMPTY:
-                                testChilds[(_y, _x)] = True
+                                self.child_coord[(_y, _x)] = True
+
+    def get_childs_coord(self):
+        testChilds = dict()
+        dontTest = dict()
         tmp = self
         while tmp.parent:
-            for _y in range(tmp.y - G.GET("NB_SQUARE_ARROUND"), tmp.y + G.GET("NB_SQUARE_ARROUND") + 1):
-                for _x in range(tmp.x - G.GET("NB_SQUARE_ARROUND"), tmp.x + G.GET("NB_SQUARE_ARROUND") + 1):
-                    if 0 <= _x < G.GET("BOARD_SZ") and 0 <= _y < G.GET("BOARD_SZ") and self.board.content[_y][_x] == STONE_EMPTY:
-                        testChilds[(_y, _x)] = True
+            dontTest[(tmp.y, tmp.x)] = True
             tmp = tmp.parent
-        return testChilds
+        return testChilds, dontTest
 
     @get_stats
     def setChilds(self):
-        testChilds = self.get_childs_coord()
+        self.init_child_coord()
+        testChilds, dontTest = self.get_childs_coord()
 
-        if G.DEBUG_SEARCH_ZONE:
-            self.game.board.reset_debug()
+        for y, x in self.child_coord:
+            if (y, x) in dontTest:
+                continue
+            if G.DEBUG_SEARCH_ZONE:
+                self.game.board.content_desc[y][x]['debug_marker_color'] = 'red'
+            self.childs.append(Node(self.game, self.transpositionTable, not self.stone, x, y, self.depth - 1, self))
         for y, x in testChilds:
+            if (y, x) in dontTest or (y, x) in self.child_coord:
+                continue
             if G.DEBUG_SEARCH_ZONE:
                 self.game.board.content_desc[y][x]['debug_marker_color'] = 'red'
             self.childs.append(Node(self.game, self.transpositionTable, not self.stone, x, y, self.depth - 1, self))

@@ -27,7 +27,7 @@ class AIPlayer(Player):
         this function is called when the AI need to move
         -> put a stone on the board
         """
-        if G.DEBUG_KEEP_NODE_PERCENT or G.DEBUG_ANTICIPATION:
+        if G.DEBUG_KEEP_NODE_PERCENT or G.DEBUG_ANTICIPATION or G.DEBUG_SEARCH_ZONE:
             self.game.board.reset_debug()
         # put the first stone in the middle
         if (self.game.board.remain_places == G.GET("BOARD_SZ") * G.GET("BOARD_SZ")):
@@ -48,6 +48,7 @@ class AIPlayer(Player):
                 node = node.parent
             self.game.board.put_stone(node.x, node.y, self.stone)
 
+@get_stats_and_mark(pr_min_time=False, pr_max_time=False)
 def heuristic(node):
     res = get_heuristic(node)
     return res

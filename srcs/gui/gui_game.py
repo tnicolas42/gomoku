@@ -145,7 +145,7 @@ class GuiGame(BaseGui):
                     y_win = line_space + line_space * y
                     create_args = {'fill': STONES[self.game.board.content[y][x]]}
                     if self.game.board.content_desc[y][x]['debug_color'] is not None:
-                        create_args['outline'] = self.game.board.content_desc[y][x]['debug_color']
+                        create_args['outline'] = "black" if self.game.board.content_desc[y][x]['debug_color'] is None else self.game.board.content_desc[y][x]['debug_color']
                         create_args['width'] = self.w_board_sz // 200
                     elif self.game.board.content_desc[y][x]['win']:
                         create_args['outline'] = 'green'
@@ -170,25 +170,31 @@ class GuiGame(BaseGui):
                                                     int(x_win - line_space * 0.4), int(y_win + line_space * 0.4),
                                                     **cross_line_args)
                 if self.game.board.content_desc[y][x]['debug_marker_color'] is not None:
-                    x_win = line_space + line_space * x
-                    y_win = line_space + line_space * y
-                    cross_line_args = {'fill': self.game.board.content_desc[y][x]['debug_marker_color'], 'width': self.w_board_sz // 200}
-                    self.board_canvas.create_line(int(x_win - line_space * 0.4), int(y_win - line_space * 0.4),
-                                                    int(x_win + line_space * 0.4), int(y_win + line_space * 0.4),
-                                                    **cross_line_args)
-                    self.board_canvas.create_line(int(x_win + line_space * 0.4), int(y_win - line_space * 0.4),
-                                                    int(x_win - line_space * 0.4), int(y_win + line_space * 0.4),
-                                                    **cross_line_args)
+                    try:
+                        x_win = line_space + line_space * x
+                        y_win = line_space + line_space * y
+                        cross_line_args = {'fill': self.game.board.content_desc[y][x]['debug_marker_color'], 'width': self.w_board_sz // 200}
+                        self.board_canvas.create_line(int(x_win - line_space * 0.4), int(y_win - line_space * 0.4),
+                                                        int(x_win + line_space * 0.4), int(y_win + line_space * 0.4),
+                                                        **cross_line_args)
+                        self.board_canvas.create_line(int(x_win + line_space * 0.4), int(y_win - line_space * 0.4),
+                                                        int(x_win - line_space * 0.4), int(y_win + line_space * 0.4),
+                                                        **cross_line_args)
+                    except TypeError:
+                        pass
                 if self.game.board.content_desc[y][x]['debug_txt'] is not None:
-                    x_win = line_space + line_space * x
-                    y_win = line_space + line_space * y
-                    self.board_canvas.create_text(int(x_win),
-                                                 int(y_win),
-                                                 fill=complementaryColor(self.game.board.content_desc[y][x]['debug_txt'][1]),
-                                                 font="Times %d bold" % (self.w_width_left * 0.14),
-                                                 text=self.game.board.content_desc[y][x]['debug_txt'][0])
-                    self.board_canvas.create_text(int(x_win),
-                                                 int(y_win),
-                                                 fill=self.game.board.content_desc[y][x]['debug_txt'][1],
-                                                 font="Times %d" % (self.w_width_left * 0.14),
-                                                 text=self.game.board.content_desc[y][x]['debug_txt'][0])
+                    try:
+                        x_win = line_space + line_space * x
+                        y_win = line_space + line_space * y
+                        self.board_canvas.create_text(int(x_win),
+                                                    int(y_win),
+                                                    fill=complementaryColor(self.game.board.content_desc[y][x]['debug_txt'][1]),
+                                                    font="Times %d bold" % (self.w_width_left * 0.14),
+                                                    text=self.game.board.content_desc[y][x]['debug_txt'][0])
+                        self.board_canvas.create_text(int(x_win),
+                                                    int(y_win),
+                                                    fill=self.game.board.content_desc[y][x]['debug_txt'][1],
+                                                    font="Times %d" % (self.w_width_left * 0.14),
+                                                    text=self.game.board.content_desc[y][x]['debug_txt'][0])
+                    except TypeError:
+                        pass
