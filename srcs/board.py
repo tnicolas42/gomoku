@@ -34,7 +34,7 @@ class SoftBoard(object):
     def __init__(self, game, content=[]):
         self.game = game
         # player id or STONE_EMPTY
-        self.content = content if content != [] else [STONE_EMPTY] * G.GET("BOARD_SZ")
+        self.content = content.copy() if content != [] else [STONE_EMPTY] * G.GET("BOARD_SZ")
         # True if vulnerable (BAA.)
         self.vulnerability = [
             [False for i in range(G.GET("BOARD_SZ"))] for j in range(G.GET("BOARD_SZ"))
