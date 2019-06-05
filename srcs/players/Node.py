@@ -55,6 +55,10 @@ class Node():
         tmp = self
         while tmp.parent:
             dontTest[(tmp.y, tmp.x)] = True
+            for _y in range(tmp.y - G.GET("NB_SQUARE_ARROUND"), tmp.y + G.GET("NB_SQUARE_ARROUND") + 1):
+                for _x in range(tmp.x - G.GET("NB_SQUARE_ARROUND"), tmp.x + G.GET("NB_SQUARE_ARROUND") + 1):
+                    if 0 <= _x < G.GET("BOARD_SZ") and 0 <= _y < G.GET("BOARD_SZ") and self.board.content[_y][_x] == STONE_EMPTY:
+                        testChilds[(_y, _x)] = True
             tmp = tmp.parent
         return testChilds, dontTest
 
@@ -65,6 +69,12 @@ class Node():
 
         for y, x in self.child_coord:
             if (y, x) in dontTest:
+                continue
+            if G.DEBUG_SEARCH_ZONE:
+                self.game.board.content_desc[y][x]['debug_marker_color'] = 'red'
+            self.childs.append(Node(self.game, self.transpositionTable, not self.stone, self.depth - 1, x, y, self))
+        for y, x in testChilds:
+            if (y, x) in dontTest or (y, x) in self.child_coord:
                 continue
             if G.DEBUG_SEARCH_ZONE:
                 self.game.board.content_desc[y][x]['debug_marker_color'] = 'red'
